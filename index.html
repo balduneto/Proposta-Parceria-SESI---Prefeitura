@@ -271,30 +271,48 @@
                 <p class="text-gray-600">Resumo financeiro total da parceria com base nas seleções anteriores.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Card 1: Total OPEX -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
                     <span class="text-sm font-medium text-gray-500 block">Total OPEX (Anual)</span>
                     <span id="total-opex-consolidado" class="text-3xl font-bold text-cyan-700">R$ 0,00</span>
                     <p class="text-xs text-gray-400 mt-2">Custo operacional das oficinas.</p>
                 </div>
 
+                <!-- Card 2: Total CAPEX -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
                     <span class="text-sm font-medium text-gray-500 block">Total CAPEX (Aquisição)</span>
                     <span id="total-capex-consolidado" class="text-3xl font-bold text-cyan-700">R$ 0,00</span>
                     <p class="text-xs text-gray-400 mt-2">Custo de aquisição de itens.</p>
                 </div>
 
-                <div class="bg-cyan-800 text-white rounded-lg p-6 shadow-xl text-center flex flex-col justify-center">
-                    <span class="text-lg font-semibold block">Valor Total da Proposta</span>
-                    <span id="total-geral-proposta" class="text-4xl font-bold my-2">R$ 0,00</span>
-                    <p class="text-xs text-cyan-100 mt-2">Soma (OPEX Anual + CAPEX)</p>
+                <!-- Card 3: Novo Card Assistentes -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm md:col-span-2">
+                    <div class="flex items-center justify-center mb-2">
+                        <label for="bl4-incluir-assistentes" class="text-sm font-medium text-gray-500 text-center mr-3">Contratação Assistentes (5%)</label>
+                        <label class="switch">
+                            <input type="checkbox" id="bl4-incluir-assistentes">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <span id="bl4-custo-assistentes" class="text-3xl font-bold text-gray-800 block text-center">+ R$ 0,00</span>
+                    <p class="text-xs text-gray-400 mt-2 text-center">Valor refere-se a 1 Assistente Educacional por escola selecionada (calculado como 5% do subtotal OPEX+CAPEX).</p>
                 </div>
+
             </div>
+
+            <!-- Card 4: Total Geral (Movido para baixo) -->
+            <div class="bg-cyan-800 text-white rounded-lg p-6 shadow-xl text-center flex flex-col justify-center">
+                <span class="text-lg font-semibold block">Valor Total da Proposta</span>
+                <span id="total-geral-proposta" class="text-4xl font-bold my-2">R$ 0,00</span>
+                <p class="text-xs text-cyan-100 mt-2">Soma (OPEX Anual + CAPEX + Custo Assistentes)</p>
+            </div>
+
 
             <!-- Rodapé Explicativo Bloco 4 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 4:</strong> Este bloco final consolida a proposta. Ele simplesmente soma o <strong>Total OPEX</strong> (calculado no Bloco 2) com o <strong>Total CAPEX</strong> (calculado no Bloco 3) para apresentar o <strong>Valor Total da Proposta</strong>, que se atualiza automaticamente com qualquer mudança nos blocos anteriores.
+                    <strong>Resumo do Bloco 4:</strong> Este bloco final consolida a proposta. Ele soma o <strong>Total OPEX</strong> (Bloco 2) com o <strong>Total CAPEX</strong> (Bloco 3) e o <strong>Custo Assistentes</strong> (opcional de 5%) para apresentar o <strong>Valor Total da Proposta</strong>.
                 </p>
             </div>
 
@@ -380,12 +398,14 @@
         const capexTabelaItensContainer = document.getElementById('capex-tabela-itens');
         const capexTotalGeralEl = document.getElementById('capex-total-geral');
 
-        // --- REFERÊNCIAS DO DOM - BLOCO 4 ---
+        // --- REFERÊNCIAS DO DOM - BLOCO 4 (ATUALIZADO) ---
         const totalOpexConsolidadoEl = document.getElementById('total-opex-consolidado');
         const totalCapexConsolidadoEl = document.getElementById('total-capex-consolidado');
+        const bl4IncluirAssistentesCheck = document.getElementById('bl4-incluir-assistentes'); // NOVO
+        const bl4CustoAssistentesEl = document.getElementById('bl4-custo-assistentes'); // NOVO
         const totalGeralPropostaEl = document.getElementById('total-geral-proposta');
-        const btnGerarPdfCompleto = document.getElementById('btn-gerar-pdf-completo'); // ID ATUALIZADO
-        const btnGerarPdfResumo = document.getElementById('btn-gerar-pdf-resumo'); // NOVO BOTÃO
+        const btnGerarPdfCompleto = document.getElementById('btn-gerar-pdf-completo');
+        const btnGerarPdfResumo = document.getElementById('btn-gerar-pdf-resumo');
 
 
         // --- FUNÇÃO PARA FORMATAR MOEDA ---
@@ -396,7 +416,9 @@
         // --- FUNÇÃO PARA CONVERTER MOEDA FORMATADA EM NÚMERO ---
         function parseMoeda(valorString) {
             if (!valorString) return 0;
-            return parseFloat(valorString.replace('R$', '').replace(/\./g, '').replace(',', '.')) || 0;
+            // Trata valores como "+ R$ 0,00"
+            const valorLimpo = valorString.replace('+', '').replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+            return parseFloat(valorLimpo) || 0;
         }
 
 
@@ -480,84 +502,73 @@
             });
         }
 
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 2 (OPEX) (ATUALIZADO) ---
+        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 2 (OPEX) ---
         function atualizarOpex(totalEscolas) {
-            // 1. Atualiza o card de Total de Escolas (espelho)
             opexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-
-            // 2. Lê os valores editáveis e fixos
-            const docentesPorEscola = 12; // Valor fixo conforme solicitado
+            const docentesPorEscola = 12;
             const horasAnuais = parseFloat(opexHorasAnuaisInput.value) || 0;
             const valorHora = parseFloat(opexValorHoraDocenteInput.value) || 0;
             const incluirMonitor = opexIncluirMonitorCheck.checked;
             const valorAnualMonitorPorDocente = 18000;
-
-            // 3. Calcula o Total de Docentes
             const totalDocentes = totalEscolas * docentesPorEscola;
             opexTotalDocentesEl.innerText = totalDocentes.toLocaleString('pt-BR');
-
-            // 4. Calcula os custos parciais
             const custoDocentes = totalDocentes * horasAnuais * valorHora;
             let custoMonitores = 0;
-            
             if (incluirMonitor) {
                 custoMonitores = totalDocentes * valorAnualMonitorPorDocente;
             }
             opexCustoMonitorCalculadoEl.innerText = formatarMoeda(custoMonitores);
-
-            // 5. Calcula o Total OPEX Anual
             const totalOpex = custoDocentes + custoMonitores;
             opexTotalAnualEl.innerText = formatarMoeda(totalOpex);
-
-            return totalOpex; // Retorna o valor numérico
+            return totalOpex;
         }
         
         // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 3 (CAPEX) ---
         function atualizarCapex(totalEscolas) {
             capexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-
             let totalCapexGeral = 0;
             const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
-
             itemRows.forEach(row => {
                 const checkbox = row.querySelector('.capex-checkbox');
                 const qtdPorEscolaInput = row.querySelector('.capex-qtd-escola');
                 const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
                 const custoTotalSpan = row.querySelector('.capex-custo-total');
-
                 const qtdPorEscola = parseFloat(qtdPorEscolaInput.value) || 0;
                 let valorUnitarioEscolhido = 0;
-
                 if (radioSelecionado) {
                     valorUnitarioEscolhido = parseFloat(radioSelecionado.dataset.valorUnitario) || 0;
                 }
-                
                 const custoTotalItem = qtdPorEscola * valorUnitarioEscolhido * totalEscolas;
-
                 custoTotalSpan.innerText = formatarMoeda(custoTotalItem);
-
                 if (checkbox.checked) {
                     totalCapexGeral += custoTotalItem;
                 }
             });
-
             capexTotalGeralEl.innerText = formatarMoeda(totalCapexGeral);
-
-            return totalCapexGeral; // Retorna o valor numérico
+            return totalCapexGeral;
         }
 
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 4 (CONSOLIDAÇÃO) ---
+        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 4 (CONSOLIDAÇÃO) (ATUALIZADO) ---
         function atualizarConsolidacao(totalOpex, totalCapex) {
-            const totalGeral = totalOpex + totalCapex;
+            const subTotal = totalOpex + totalCapex;
+            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
+            
+            let custoAssistentes = 0;
+            if (incluirAssistentes) {
+                custoAssistentes = subTotal * 0.05; // 5% do subtotal
+            }
 
+            const totalGeral = subTotal + custoAssistentes;
+
+            // Atualiza os cards
             totalOpexConsolidadoEl.innerText = formatarMoeda(totalOpex);
             totalCapexConsolidadoEl.innerText = formatarMoeda(totalCapex);
-            totalGeralPropostaEl.innerText = formatarMoeda(totalGeral);
+            bl4CustoAssistentesEl.innerText = "+ " + formatarMoeda(custoAssistentes); // Mostra o valor do 5%
+            totalGeralPropostaEl.innerText = formatarMoeda(totalGeral); // Mostra o total final
         }
 
 
         // --- FUNÇÃO PRINCIPAL (BLOCO 1) ---
-        // Esta função recalcula TUDO, pois Bloco 1 é a base.
         function atualizarTotais() {
             let totalEscolas = 0;
             let totalAlunosBase = 0;
@@ -583,13 +594,13 @@
             totalAlunosFinalEl.innerText = totalAlunosFinal.toLocaleString('pt-BR');
             atualizarAnalise(totalEscolas, totalAlunosBase, totalTurmas, totalAlunosFinal, mediaAlunos);
 
-            // Recalcula Bloco 2 (AGORA USA totalEscolas)
+            // Recalcula Bloco 2
             const totalOpexNumerico = atualizarOpex(totalEscolas); 
             
             // Recalcula Bloco 3
             const totalCapexNumerico = atualizarCapex(totalEscolas);
 
-            // Recalcula Bloco 4
+            // Recalcula Bloco 4 (com os valores frescos)
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
         }
 
@@ -608,56 +619,42 @@
             analisePropostaEl.innerHTML = analiseHTML;
         }
 
-        // --- NOVA FUNÇÃO PARA LIMPAR FILTROS (BLOCO 1) ---
+        // --- FUNÇÃO PARA LIMPAR FILTROS (BLOCO 1) ---
         function limparFiltrosBloco1() {
-            // 1. Limpa o campo de busca
             filtroEscolaInput.value = '';
-            
-            // 2. Reseta o acréscimo
             acrescimoInput.value = '0';
-            
-            // 3. Desmarca todos os checkboxes
             const checkboxes = document.querySelectorAll('.escola-checkbox:checked');
             checkboxes.forEach(check => {
                 check.checked = false;
             });
-            
-            // 4. Renderiza a lista de escolas (sem filtro)
             renderizarListaEscolas();
-            
-            // 5. Atualiza (zera) todos os totais da aplicação
             atualizarTotais();
         }
 
         // --- FUNÇÃO DE CALLBACK PARA RECALCULAR BLOCO 2 E 4 ---
         function recalcularOpexEConsolidacao() {
-            // Pega o total de escolas ATUAL do Bloco 1 (que é a base)
             const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
             const totalEscolasAtual = parseInt(escolasStr) || 0;
-            
-            // 1. Recalcula o Opex e pega seu novo valor
             const totalOpexNumerico = atualizarOpex(totalEscolasAtual);
-
-            // 2. Pega o valor ATUAL do Capex (já calculado)
             const totalCapexNumerico = parseMoeda(capexTotalGeralEl.innerText);
-
-            // 3. Atualiza a consolidação (Bloco 4)
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
         }
 
         // --- FUNÇÃO DE CALLBACK PARA RECALCULAR BLOCO 3 E 4 ---
         function recalcularCapexEConsolidacao() {
-            // Pega o total de escolas ATUAL do Bloco 1 (que é a base)
             const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
             const totalEscolasAtual = parseInt(escolasStr) || 0;
-
-            // 1. Recalcula o Capex e pega seu novo valor
             const totalCapexNumerico = atualizarCapex(totalEscolasAtual);
-
-            // 2. Pega o valor ATUAL do Opex (já calculado)
             const totalOpexNumerico = parseMoeda(opexTotalAnualEl.innerText);
+            atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
+        }
 
-            // 3. Atualiza a consolidação (Bloco 4)
+        // --- NOVA FUNÇÃO DE CALLBACK PARA RECALCULAR APENAS O BLOCO 4 ---
+        function recalcularApenasConsolidacao() {
+            // Pega os valores atuais de OPEX e CAPEX já calculados
+            const totalOpexNumerico = parseMoeda(totalOpexConsolidadoEl.innerText);
+            const totalCapexNumerico = parseMoeda(totalCapexConsolidadoEl.innerText);
+            // Re-executa a consolidação (que irá ler o switch de 5%)
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
         }
 
@@ -669,35 +666,25 @@
             
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
-
-                // --- HEADER (Layout: Texto à Esquerda, Logo à Direita) ---
                 doc.setFontSize(18);
                 doc.setFont('helvetica', 'bold');
                 doc.setTextColor(40, 40, 40);
-                
-                // Posição Y do texto
                 let textY = 18;
-                // Título (à esquerda)
                 doc.text("Proposta de Parceria - Atividades Complementares (Tempo Integral)", 15, textY);
-
-                // Logo (à direita)
                 if (logoImg) {
                     try {
-                        const logoHeight = 12; // Altura da logo no PDF
-                        const logoWidth = (logoImg.width / logoImg.height) * logoHeight; // Largura proporcional
-                        const logoX = doc.internal.pageSize.getWidth() - 15 - logoWidth; // Alinhado à direita
-                        const logoY = textY - (logoHeight / 2) - 1; // Centralizado verticalmente com o texto
+                        const logoHeight = 12;
+                        const logoWidth = (logoImg.width / logoImg.height) * logoHeight;
+                        const logoX = doc.internal.pageSize.getWidth() - 15 - logoWidth;
+                        const logoY = textY - (logoHeight / 2) - 1;
                         doc.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
                     } catch (e) {
                         console.error("Erro ao adicionar imagem ao PDF: ", e);
                         doc.text("Logo", 180, 15);
                     }
                 }
-                // Linha divisória
                 doc.setLineWidth(0.5);
-                doc.line(15, 28, 195, 28); // Linha abaixo do header
-
-                // --- FOOTER ---
+                doc.line(15, 28, 195, 28);
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
                 doc.text(`Gerado em: ${dataGeracao}`, 15, 288);
@@ -708,13 +695,9 @@
         // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) ---
         function gerarPDFCompleto() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'p',
-                unit: 'mm',
-                format: 'a4'
-            });
+            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
             const dataGeracao = new Date().toLocaleString('pt-BR');
-            let y = 40; // Posição Y inicial (abaixo do header)
+            let y = 40;
 
             // --- PÁGINA 1: BLOCO 1 E 2 ---
             doc.setFontSize(14);
@@ -722,11 +705,8 @@
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 1: DIMENSIONAMENTO DO PÚBLICO-ALVO", 15, y);
             y += 8;
-
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
                 body: [
                     ['Total Escolas', 'Total Alunos (Base)', 'Total Turmas', 'Média Alunos/Turma'],
                     [totalEscolasEl.innerText, totalAlunosBaseEl.innerText, totalTurmasEl.innerText, mediaAlunosEl.innerText]
@@ -734,25 +714,20 @@
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 8;
-
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
                 body: [
                     ['Acréscimo Especiais (%)', 'Total Alunos (Final Estimado)'],
                     [`${acrescimoInput.value}%`, totalAlunosFinalEl.innerText]
                 ],
-                headStyles: { fillColor: [241, 245, 249] }, // cinza claro
+                headStyles: { fillColor: [241, 245, 249] },
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 10;
-            
             doc.setFontSize(11);
             doc.setFont('helvetica', 'bold');
             doc.text("Escolas Incluídas na Proposta:", 15, y);
             y += 6;
-            
             const checkboxes = document.querySelectorAll('.escola-checkbox:checked');
             let escolasData = [];
             if (checkboxes.length > 0) {
@@ -764,33 +739,23 @@
             } else {
                 escolasData.push(["Nenhuma escola selecionada.", "-", "-"]);
             }
-            
             doc.autoTable({
-                startY: y,
-                head: [['Unidade Educacional', 'Alunos', 'Turmas']],
-                body: escolasData,
+                startY: y, head: [['Unidade Educacional', 'Alunos', 'Turmas']], body: escolasData,
                 headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
                 bodyStyles: { fontSize: 8.5 },
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 10;
+            if (y > 200) { doc.addPage(); y = 40; }
 
-            if (y > 200) { 
-                doc.addPage();
-                y = 40; 
-            }
-
-            // --- BLOCO 2: OPEX (ATUALIZADO) ---
+            // --- BLOCO 2: OPEX ---
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 2: CUSTOS OPERACIONAIS (OPEX)", 15, y);
             y += 8;
-
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 2 },
+                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
                 body: [
                     ['Total de Escolas (Base)', opexTotalEscolasEl.innerText],
                     ['Docentes por Escola (Fixo)', '12'],
@@ -806,24 +771,20 @@
             });
             y = doc.autoTable.previous.finalY;
 
-            // --- PÁGINA 2 (ou continuação): BLOCO 3 (CAPEX) ---
+            // --- PÁGINA 2: BLOCO 3 (CAPEX) ---
             doc.addPage();
             y = 40; 
-
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 3: CUSTOS DE AQUISIÇÃO (CAPEX)", 15, y);
             y += 8;
-            
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.text(`Base de Cálculo: ${capexTotalEscolasEl.innerText} escola(s) selecionada(s).`, 15, y);
             y += 6;
-
             const capexHead = [['Produto', 'Qtd p/ Escola', 'Tipo Custo', 'Vlr. Unitário', 'Custo Total']];
             const capexBody = [];
-            
             const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
             itemRows.forEach(row => {
                 const checkbox = row.querySelector('.capex-checkbox');
@@ -832,28 +793,21 @@
                     const qtd = row.querySelector('.capex-qtd-escola').value;
                     const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
                     const custoTotalLinha = row.querySelector('.capex-custo-total').innerText;
-                    
                     let tipoCusto = "N/A";
                     let vlrUnitario = "N/A";
-                    
                     if (radioSelecionado) {
                         vlrUnitario = formatarMoeda(radioSelecionado.dataset.valorUnitario);
                         tipoCusto = radioSelecionado.closest('label').innerText.split(':')[0].trim();
                     }
-
                     capexBody.push([produto, qtd, tipoCusto, vlrUnitario, { content: custoTotalLinha, styles: { halign: 'right' } }]);
                 }
             });
-            
             capexBody.push([
                 { content: 'TOTAL CAPEX (Aquisição)', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } },
                 { content: capexTotalGeralEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
             ]);
-
             doc.autoTable({
-                startY: y,
-                head: capexHead,
-                body: capexBody,
+                startY: y, head: capexHead, body: capexBody,
                 headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
                 bodyStyles: { fontSize: 8 },
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
@@ -861,45 +815,52 @@
             
             let finalY = doc.autoTable.previous.finalY;
 
-            // --- BLOCO 4: CONSOLIDAÇÃO ---
+            // --- BLOCO 4: CONSOLIDAÇÃO (ATUALIZADO) ---
             if (finalY > 240) {
                 doc.addPage();
                 finalY = 40;
             } else {
                 finalY += 10;
             }
-
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA", 15, finalY);
             finalY += 10;
-
+            
+            // --- Tabela de Consolidação (ATUALIZADA) ---
+            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
+            const custoAssistentesValor = parseMoeda(bl4CustoAssistentesEl.innerText);
+            let bodyConsolidacaoCompleto = [
+                ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
+                ['Total CAPEX (Aquisição)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
+            ];
+            if (incluirAssistentes) {
+                bodyConsolidacaoCompleto.push(
+                    ['(+) Custo Assistentes (5%)', { content: formatarMoeda(custoAssistentesValor), styles: { halign: 'right' } }]
+                );
+            }
+            bodyConsolidacaoCompleto.push(
+                [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
+                 { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
+            );
             doc.autoTable({
-                startY: finalY,
-                theme: 'grid',
-                styles: { fontSize: 11, cellPadding: 3 },
-                body: [
-                    ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                    ['Total CAPEX (Aquisição)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                    [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
-                     { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
-                ],
+                startY: finalY, theme: 'grid', styles: { fontSize: 11, cellPadding: 3 },
+                body: bodyConsolidacaoCompleto,
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
+            // --- Fim da Tabela ---
 
-            // Adiciona o footer na última página
             addHeaderFooterPDF(doc, dataGeracao);
-
             doc.save('Proposta_Completa_Parceria_SESI_SME.pdf');
         }
 
-        // --- NOVA FUNÇÃO PARA GERAR O PDF (Versão Resumo) ---
+        // --- FUNÇÃO PARA GERAR O PDF (Versão Resumo) ---
         function gerarPDFResumo() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
             const dataGeracao = new Date().toLocaleString('pt-BR');
-            let y = 40; // Posição Y inicial (abaixo do header)
+            let y = 40; 
 
             // --- BLOCO 1 ---
             doc.setFontSize(14);
@@ -908,9 +869,7 @@
             doc.text("BLOCO 1: RESUMO DO PÚBLICO-ALVO", 15, y);
             y += 8;
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 2 },
+                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
                 body: [
                     ['Total Escolas', totalEscolasEl.innerText],
                     ['Total Alunos (Base)', totalAlunosBaseEl.innerText],
@@ -929,9 +888,7 @@
             doc.text("BLOCO 2: RESUMO DE CUSTOS OPERACIONAIS (OPEX)", 15, y);
             y += 8;
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 2 },
+                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
                 body: [
                     ['Total Docentes (12/escola)', opexTotalDocentesEl.innerText],
                     ['Custo Monitores Incluído', opexIncluirMonitorCheck.checked ? 'Sim' : 'Não'],
@@ -942,57 +899,59 @@
             });
             y = doc.autoTable.previous.finalY + 10;
             
-            // --- BLOCO 4 ---
+            // --- BLOCO 4 (ATUALIZADO) ---
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
             doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA", 15, y);
             y += 10;
+            
+            // --- Tabela de Consolidação (ATUALIZADA) ---
+            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
+            const custoAssistentesValor = parseMoeda(bl4CustoAssistentesEl.innerText);
+            let bodyConsolidacaoResumo = [
+                ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
+                ['Total CAPEX (Aquisição)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
+            ];
+            if (incluirAssistentes) {
+                bodyConsolidacaoResumo.push(
+                    ['(+) Custo Assistentes (5%)', { content: formatarMoeda(custoAssistentesValor), styles: { halign: 'right' } }]
+                );
+            }
+            bodyConsolidacaoResumo.push(
+                [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
+                 { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
+            );
             doc.autoTable({
-                startY: y,
-                theme: 'grid',
-                styles: { fontSize: 11, cellPadding: 3 },
-                body: [
-                    ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                    ['Total CAPEX (Aquisição)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                    [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
-                     { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
-                ],
+                startY: y, theme: 'grid', styles: { fontSize: 11, cellPadding: 3 },
+                body: bodyConsolidacaoResumo,
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
+            // --- Fim da Tabela ---
 
-            // Adiciona Header/Footer na página final
             addHeaderFooterPDF(doc, dataGeracao);
             doc.save('Resumo_Proposta_Parceria_SESI_SME.pdf');
         }
 
         // --- EVENT LISTENERS ---
 
-        // Bloco 1: Filtro de busca
+        // Bloco 1:
         filtroEscolaInput.addEventListener('input', (e) => {
             renderizarListaEscolas(e.target.value);
         });
-
-        // Bloco 1: Checkboxes de escolas (delegação)
-        // ATUALIZA TUDO
         listaEscolasContainer.addEventListener('change', (e) => {
             if (e.target.classList.contains('escola-checkbox')) {
                 atualizarTotais();
             }
         });
-
-        // Bloco 1: Acréscimo
-        // ATUALIZA TUDO
         acrescimoInput.addEventListener('input', atualizarTotais);
-
-        // Bloco 1: Botão Limpar Filtros
         btnLimparFiltros.addEventListener('click', limparFiltrosBloco1);
 
-        // Bloco 2: Inputs OPEX (ATUALIZADO)
+        // Bloco 2:
         opexHorasAnuaisInput.addEventListener('input', recalcularOpexEConsolidacao);
         opexValorHoraDocenteInput.addEventListener('input', recalcularOpexEConsolidacao);
-        opexIncluirMonitorCheck.addEventListener('change', recalcularOpexEConsolidacao); // Novo listener
+        opexIncluirMonitorCheck.addEventListener('change', recalcularOpexEConsolidacao);
         
-        // Bloco 3: Inputs e Checkboxes CAPEX (delegação)
+        // Bloco 3:
         capexTabelaItensContainer.addEventListener('input', (e) => {
             if (e.target.classList.contains('capex-qtd-escola') || 
                 e.target.classList.contains('capex-checkbox') ||
@@ -1001,9 +960,10 @@
             }
         });
 
-        // Bloco 4: Botões Gerar PDF (ATUALIZADOS)
+        // Bloco 4:
+        bl4IncluirAssistentesCheck.addEventListener('change', recalcularApenasConsolidacao); // NOVO
         btnGerarPdfCompleto.addEventListener('click', gerarPDFCompleto);
-        btnGerarPdfResumo.addEventListener('click', gerarPDFResumo); // NOVO LISTENER
+        btnGerarPdfResumo.addEventListener('click', gerarPDFResumo);
 
         // --- INICIALIZAÇÃO ---
         renderizarListaEscolas(); 
