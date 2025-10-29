@@ -33,6 +33,46 @@
         .table-input {
             @apply w-20 text-center p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-cyan-500;
         }
+        /* Estilo para o Switch (Checkbox) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #0891b2; /* Cor Ciano */
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-4 md:p-10">
@@ -128,47 +168,54 @@
                     <span id="opex-total-escolas" class="text-4xl font-bold text-cyan-700">0</span>
                     <p class="text-xs text-gray-400 mt-2">Valor-base vindo da seleção de escolas.</p>
                 </div>
-
-                <!-- Card 2: Docentes por Escola (Input) -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-docentes-por-escola" class="text-sm font-medium text-gray-500 block mb-2 text-center">Docentes por Escola</label>
-                    <input type="number" id="opex-docentes-por-escola" value="12" min="0" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                    <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: 12).</p>
-                </div>
-
-                <!-- Card 3: Total OPEX (Resultado) -->
-                <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center row-span-2 flex flex-col justify-center">
-                    <span class="text-lg font-medium block">Total OPEX (Anual)</span>
-                    <span id="opex-total-anual" class="text-4xl font-bold my-2">R$ 0,00</span>
-                    <p class="text-xs text-cyan-100 mt-2">Cálculo: (Total Docentes) x (Horas/Docente) x (Valor/Hora)</p>
-                </div>
-
-                <!-- Card 4: Total Docentes (Calculado) -->
+                
+                <!-- Card 2: Total Docentes (Calculado) -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total Docentes (Calculado)</span>
+                    <span class="text-sm font-medium text-gray-500 block">Total Docentes (12 por escola)</span>
                     <span id="opex-total-docentes" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">Cálculo: (Total Escolas) x (Docentes por Escola)</p>
+                    <p class="text-xs text-gray-400 mt-2">Cálculo: (Total Escolas) x 12</p>
                 </div>
 
-                <!-- Card 5: Horas Anuais / Docente (Input) -->
+                <!-- Card 3: Horas Anuais / Docente (Input) -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <label for="opex-horas-anuais-docente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Horas Anuais / Docente</label>
                     <input type="number" id="opex-horas-anuais-docente" value="204" min="0" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
                     <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: 204h).</p>
                 </div>
 
-                <!-- Card 6: Valor Hora / Docente (Input) -->
+                <!-- Card 4: Valor Hora / Docente (Input) -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <label for="opex-valor-hora-docente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Valor Hora / Docente (R$)</label>
                     <input type="number" id="opex-valor-hora-docente" value="220.00" min="0" step="0.01" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
                     <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: R$ 220,00).</p>
                 </div>
+
+                <!-- Card 5: Custo Monitor Pedagógico (Input) -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <div class="flex items-center justify-center mb-2">
+                        <label for="opex-incluir-monitor" class="text-sm font-medium text-gray-500 text-center mr-3">Custo Monitor Pedagógico</label>
+                        <label class="switch">
+                            <input type="checkbox" id="opex-incluir-monitor">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <span id="opex-custo-monitor-calculado" class="text-3xl font-bold text-gray-800 block text-center">R$ 0,00</span>
+                    <p class="text-xs text-gray-400 mt-2 text-center">R$ 18.000,00 por docente/ano (R$ 1.500,00/mês)</p>
+                </div>
+
+                <!-- Card 6: Total OPEX (Resultado) -->
+                <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center flex flex-col justify-center">
+                    <span class="text-lg font-medium block">Total OPEX (Anual)</span>
+                    <span id="opex-total-anual" class="text-4xl font-bold my-2">R$ 0,00</span>
+                    <p class="text-xs text-cyan-100 mt-2">Cálculo: (Custo Docentes) + (Custo Monitores)</p>
+                </div>
+
             </div>
 
             <!-- Rodapé Explicativo Bloco 2 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 2:</strong> Este bloco calcula o custo operacional (OPEX), focado em pessoal. O cálculo multiplica o <strong>Total de Escolas</strong> (definido no Bloco 1) pelo <strong>número de Docentes</strong> por escola, suas <strong>Horas Anuais</strong> e o <strong>Valor da Hora</strong>, resultando no custo total anual com docentes.
+                    <strong>Resumo do Bloco 2:</strong> Este bloco calcula o custo operacional (OPEX). O cálculo multiplica o <strong>Total de Docentes</strong> (12 por escola) pelas <strong>Horas Anuais</strong> e <strong>Valor da Hora</strong>. Opcionalmente, inclui o <strong>Custo de Monitoria</strong> (R$ 18.000,00/ano por docente).
                 </p>
             </div>
         </div>
@@ -308,14 +355,15 @@
         const mediaAlunosEl = document.getElementById('media-alunos');
         const totalAlunosFinalEl = document.getElementById('total-alunos-final');
         const analisePropostaEl = document.getElementById('analise-proposta');
-        const btnLimparFiltros = document.getElementById('btn-limpar-filtros'); // Novo botão
+        const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
 
         // --- REFERÊNCIAS DO DOM - BLOCO 2 (ATUALIZADO) ---
         const opexTotalEscolasEl = document.getElementById('opex-total-escolas');
-        const opexDocentesPorEscolaInput = document.getElementById('opex-docentes-por-escola');
         const opexTotalDocentesEl = document.getElementById('opex-total-docentes');
         const opexHorasAnuaisInput = document.getElementById('opex-horas-anuais-docente');
         const opexValorHoraDocenteInput = document.getElementById('opex-valor-hora-docente');
+        const opexIncluirMonitorCheck = document.getElementById('opex-incluir-monitor');
+        const opexCustoMonitorCalculadoEl = document.getElementById('opex-custo-monitor-calculado');
         const opexTotalAnualEl = document.getElementById('opex-total-anual');
 
         // --- REFERÊNCIAS DO DOM - BLOCO 3 ---
@@ -427,18 +475,28 @@
             // 1. Atualiza o card de Total de Escolas (espelho)
             opexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
 
-            // 2. Lê os valores editáveis
-            const docentesPorEscola = parseFloat(opexDocentesPorEscolaInput.value) || 0;
+            // 2. Lê os valores editáveis e fixos
+            const docentesPorEscola = 12; // Valor fixo conforme solicitado
             const horasAnuais = parseFloat(opexHorasAnuaisInput.value) || 0;
             const valorHora = parseFloat(opexValorHoraDocenteInput.value) || 0;
+            const incluirMonitor = opexIncluirMonitorCheck.checked;
+            const valorAnualMonitorPorDocente = 18000;
 
             // 3. Calcula o Total de Docentes
             const totalDocentes = totalEscolas * docentesPorEscola;
             opexTotalDocentesEl.innerText = totalDocentes.toLocaleString('pt-BR');
 
-            // 4. Calcula o Total OPEX Anual
-            const totalOpex = totalDocentes * horasAnuais * valorHora;
+            // 4. Calcula os custos parciais
+            const custoDocentes = totalDocentes * horasAnuais * valorHora;
+            let custoMonitores = 0;
             
+            if (incluirMonitor) {
+                custoMonitores = totalDocentes * valorAnualMonitorPorDocente;
+            }
+            opexCustoMonitorCalculadoEl.innerText = formatarMoeda(custoMonitores);
+
+            // 5. Calcula o Total OPEX Anual
+            const totalOpex = custoDocentes + custoMonitores;
             opexTotalAnualEl.innerText = formatarMoeda(totalOpex);
 
             return totalOpex; // Retorna o valor numérico
@@ -723,10 +781,12 @@
                 styles: { fontSize: 9, cellPadding: 2 },
                 body: [
                     ['Total de Escolas (Base)', opexTotalEscolasEl.innerText],
-                    ['Docentes por Escola (Editado)', opexDocentesPorEscolaInput.value],
+                    ['Docentes por Escola (Fixo)', '12'],
                     ['Total Docentes (Calculado)', opexTotalDocentesEl.innerText],
                     ['Horas Anuais / Docente (Editado)', opexHorasAnuaisInput.value],
                     ['Valor Hora / Docente (Editado)', formatarMoeda(opexValorHoraDocenteInput.value)],
+                    ['Custo Monitor Pedagógico Incluído', opexIncluirMonitorCheck.checked ? 'Sim' : 'Não'],
+                    ['Valor Custo Monitores (Total)', opexCustoMonitorCalculadoEl.innerText],
                     [{ content: 'Total OPEX (Anual)', styles: { fontStyle: 'bold', fontSize: 10 } },
                      { content: opexTotalAnualEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }]
                 ],
@@ -848,9 +908,9 @@
         btnLimparFiltros.addEventListener('click', limparFiltrosBloco1);
 
         // Bloco 2: Inputs OPEX (ATUALIZADO)
-        opexDocentesPorEscolaInput.addEventListener('input', recalcularOpexEConsolidacao);
         opexHorasAnuaisInput.addEventListener('input', recalcularOpexEConsolidacao);
         opexValorHoraDocenteInput.addEventListener('input', recalcularOpexEConsolidacao);
+        opexIncluirMonitorCheck.addEventListener('change', recalcularOpexEConsolidacao); // Novo listener
         
         // Bloco 3: Inputs e Checkboxes CAPEX (delegação)
         capexTabelaItensContainer.addEventListener('input', (e) => {
@@ -873,4 +933,3 @@
 
 </body>
 </html>
-
