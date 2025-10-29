@@ -81,8 +81,7 @@
 
         <header class="border-b border-gray-200 pb-4 mb-6 flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">Proposta de Parceria de Gestão Escolar</h1>
-                <h2 class="text-xl font-semibold text-cyan-700">SESI & Prefeitura Municipal de Goiânia</h2>
+                <h1 class="text-1xl font-bold text-gray-700">Proposta de Parceria - Atividades Complementares (Tempo Integral)</h1>
             </div>
             <img src="https://i.postimg.cc/8CXccsTc/sseducacao.png" alt="Logomarca Seduc-GO" class="h-16 w-auto object-contain">
         </header>
@@ -299,12 +298,22 @@
                 </p>
             </div>
 
-            <div class="mt-12 text-center">
-                <button id="btn-gerar-pdf" class="bg-gray-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all duration-200">
+            <!-- Botões de Geração de PDF -->
+            <div class="mt-12 text-center flex flex-col md:flex-row items-center justify-center gap-4">
+                <!-- Botão Completo -->
+                <button id="btn-gerar-pdf-completo" class="bg-gray-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all duration-200 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H8a1 1 0 100 2h1v2a1 1 0 102 0v-2h1a1 1 0 100-2h-1V8z" clip-rule="evenodd" />
                     </svg>
-                    Gerar PDF da Proposta
+                    Gerar PDF Completo
+                </button>
+                <!-- Botão Resumo -->
+                <button id="btn-gerar-pdf-resumo" class="bg-white text-gray-700 font-medium py-3 px-6 rounded-lg shadow-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 transition-all duration-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                    Gerar Resumo PDF
                 </button>
             </div>
         </div>
@@ -375,7 +384,8 @@
         const totalOpexConsolidadoEl = document.getElementById('total-opex-consolidado');
         const totalCapexConsolidadoEl = document.getElementById('total-capex-consolidado');
         const totalGeralPropostaEl = document.getElementById('total-geral-proposta');
-        const btnGerarPdf = document.getElementById('btn-gerar-pdf');
+        const btnGerarPdfCompleto = document.getElementById('btn-gerar-pdf-completo'); // ID ATUALIZADO
+        const btnGerarPdfResumo = document.getElementById('btn-gerar-pdf-resumo'); // NOVO BOTÃO
 
 
         // --- FUNÇÃO PARA FORMATAR MOEDA ---
@@ -651,64 +661,68 @@
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
         }
 
-        // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) (ATUALIZADO) ---
-        function gerarPDF() {
+
+        // --- FUNÇÃO HELPER PARA HEADER/FOOTER DO PDF (COMPARTILHADA) ---
+        function addHeaderFooterPDF(doc, dataGeracao) {
+            const logoImg = document.querySelector('header img');
+            const pageCount = doc.internal.getNumberOfPages();
+            
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+
+                // --- HEADER (Layout: Texto à Esquerda, Logo à Direita) ---
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(40, 40, 40);
+                
+                // Posição Y do texto
+                let textY = 18;
+                // Título (à esquerda)
+                doc.text("Proposta de Parceria - Atividades Complementares (Tempo Integral)", 15, textY);
+
+                // Logo (à direita)
+                if (logoImg) {
+                    try {
+                        const logoHeight = 12; // Altura da logo no PDF
+                        const logoWidth = (logoImg.width / logoImg.height) * logoHeight; // Largura proporcional
+                        const logoX = doc.internal.pageSize.getWidth() - 15 - logoWidth; // Alinhado à direita
+                        const logoY = textY - (logoHeight / 2) - 1; // Centralizado verticalmente com o texto
+                        doc.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
+                    } catch (e) {
+                        console.error("Erro ao adicionar imagem ao PDF: ", e);
+                        doc.text("Logo", 180, 15);
+                    }
+                }
+                // Linha divisória
+                doc.setLineWidth(0.5);
+                doc.line(15, 28, 195, 28); // Linha abaixo do header
+
+                // --- FOOTER ---
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(`Gerado em: ${dataGeracao}`, 15, 288);
+                doc.text(`Página ${i} de ${pageCount}`, 195, 288, { align: 'right' });
+            }
+        }
+
+        // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) ---
+        function gerarPDFCompleto() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({
                 orientation: 'p',
                 unit: 'mm',
                 format: 'a4'
             });
-
-            const logoImg = document.querySelector('header img');
             const dataGeracao = new Date().toLocaleString('pt-BR');
-            let finalY = 0; // Variável para rastrear a posição Y final
-
-            // --- FUNÇÃO DE HEADER E FOOTER ---
-            const addHeaderFooter = () => {
-                // Header
-                if (logoImg) {
-                    try {
-                        doc.addImage(logoImg, 'PNG', 15, 10, 45, 12);
-                    } catch (e) {
-                        console.error("Erro ao adicionar imagem ao PDF: ", e);
-                        doc.text("Logo Seduc-GO", 15, 20);
-                    }
-                }
-                doc.setFontSize(18);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(40, 40, 40);
-                doc.text("Proposta de Parceria de Gestão Escolar", doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 105, 133); 
-                doc.text("SESI & Prefeitura Municipal de Goiânia", doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-                doc.setLineWidth(0.5);
-                doc.line(15, 28, 195, 28); 
-
-                // Footer
-                const pageCount = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text(`Gerado em: ${dataGeracao}`, 15, 288);
-                    doc.text(`Página ${i} de ${pageCount}`, 195, 288, { align: 'right' });
-                }
-            };
+            let y = 40; // Posição Y inicial (abaixo do header)
 
             // --- PÁGINA 1: BLOCO 1 E 2 ---
-            addHeaderFooter();
-            let y = 38;
-
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 1: DIMENSIONAMENTO DO PÚBLICO-ALVO", 15, y);
             y += 8;
 
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
             doc.autoTable({
                 startY: y,
                 theme: 'grid',
@@ -717,7 +731,7 @@
                     ['Total Escolas', 'Total Alunos (Base)', 'Total Turmas', 'Média Alunos/Turma'],
                     [totalEscolasEl.innerText, totalAlunosBaseEl.innerText, totalTurmasEl.innerText, mediaAlunosEl.innerText]
                 ],
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 8;
 
@@ -730,7 +744,7 @@
                     [`${acrescimoInput.value}%`, totalAlunosFinalEl.innerText]
                 ],
                 headStyles: { fillColor: [241, 245, 249] }, // cinza claro
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 10;
             
@@ -739,8 +753,6 @@
             doc.text("Escolas Incluídas na Proposta:", 15, y);
             y += 6;
             
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'normal');
             const checkboxes = document.querySelectorAll('.escola-checkbox:checked');
             let escolasData = [];
             if (checkboxes.length > 0) {
@@ -759,13 +771,13 @@
                 body: escolasData,
                 headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
                 bodyStyles: { fontSize: 8.5 },
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 10;
 
-            if (y > 200) { // Verifica se há espaço para o Bloco 2
+            if (y > 200) { 
                 doc.addPage();
-                y = 38; // Posição inicial após header
+                y = 40; 
             }
 
             // --- BLOCO 2: OPEX (ATUALIZADO) ---
@@ -790,13 +802,13 @@
                     [{ content: 'Total OPEX (Anual)', styles: { fontStyle: 'bold', fontSize: 10 } },
                      { content: opexTotalAnualEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }]
                 ],
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY;
 
             // --- PÁGINA 2 (ou continuação): BLOCO 3 (CAPEX) ---
             doc.addPage();
-            y = 38; 
+            y = 40; 
 
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
@@ -826,7 +838,6 @@
                     
                     if (radioSelecionado) {
                         vlrUnitario = formatarMoeda(radioSelecionado.dataset.valorUnitario);
-                        // Pega o texto do label (ex: "Aquisição: R$ 1.200,00") e extrai só o "Aquisição"
                         tipoCusto = radioSelecionado.closest('label').innerText.split(':')[0].trim();
                     }
 
@@ -834,7 +845,6 @@
                 }
             });
             
-            // Adiciona a linha de TOTAL CAPEX
             capexBody.push([
                 { content: 'TOTAL CAPEX (Aquisição)', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } },
                 { content: capexTotalGeralEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
@@ -846,15 +856,15 @@
                 body: capexBody,
                 headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
                 bodyStyles: { fontSize: 8 },
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             
-            finalY = doc.autoTable.previous.finalY; // Guarda a posição final da tabela
+            let finalY = doc.autoTable.previous.finalY;
 
-            // --- BLOCO 4: CONSOLIDAÇÃO (na mesma página se couber, senão, nova página) ---
+            // --- BLOCO 4: CONSOLIDAÇÃO ---
             if (finalY > 240) {
                 doc.addPage();
-                finalY = 38;
+                finalY = 40;
             } else {
                 finalY += 10;
             }
@@ -875,14 +885,84 @@
                     [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
                      { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
                 ],
-                didDrawPage: addHeaderFooter
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
 
             // Adiciona o footer na última página
-            addHeaderFooter();
+            addHeaderFooterPDF(doc, dataGeracao);
 
-            // Salva o PDF
             doc.save('Proposta_Completa_Parceria_SESI_SME.pdf');
+        }
+
+        // --- NOVA FUNÇÃO PARA GERAR O PDF (Versão Resumo) ---
+        function gerarPDFResumo() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+            const dataGeracao = new Date().toLocaleString('pt-BR');
+            let y = 40; // Posição Y inicial (abaixo do header)
+
+            // --- BLOCO 1 ---
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(40, 40, 40);
+            doc.text("BLOCO 1: RESUMO DO PÚBLICO-ALVO", 15, y);
+            y += 8;
+            doc.autoTable({
+                startY: y,
+                theme: 'grid',
+                styles: { fontSize: 9, cellPadding: 2 },
+                body: [
+                    ['Total Escolas', totalEscolasEl.innerText],
+                    ['Total Alunos (Base)', totalAlunosBaseEl.innerText],
+                    ['Total Turmas', totalTurmasEl.innerText],
+                    ['Acréscimo Especiais (%)', `${acrescimoInput.value}%`],
+                    [{content: 'Total Alunos (Final Estimado)', styles: {fontStyle: 'bold'}} , 
+                     {content: totalAlunosFinalEl.innerText, styles: {fontStyle: 'bold', halign: 'right'}}]
+                ],
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
+            });
+            y = doc.autoTable.previous.finalY + 10;
+
+            // --- BLOCO 2 ---
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text("BLOCO 2: RESUMO DE CUSTOS OPERACIONAIS (OPEX)", 15, y);
+            y += 8;
+            doc.autoTable({
+                startY: y,
+                theme: 'grid',
+                styles: { fontSize: 9, cellPadding: 2 },
+                body: [
+                    ['Total Docentes (12/escola)', opexTotalDocentesEl.innerText],
+                    ['Custo Monitores Incluído', opexIncluirMonitorCheck.checked ? 'Sim' : 'Não'],
+                    [{content: 'Total OPEX (Anual)', styles: {fontStyle: 'bold', fontSize: 10}}, 
+                     {content: opexTotalAnualEl.innerText, styles: {fontStyle: 'bold', fontSize: 10, halign: 'right'}}]
+                ],
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
+            });
+            y = doc.autoTable.previous.finalY + 10;
+            
+            // --- BLOCO 4 ---
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA", 15, y);
+            y += 10;
+            doc.autoTable({
+                startY: y,
+                theme: 'grid',
+                styles: { fontSize: 11, cellPadding: 3 },
+                body: [
+                    ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
+                    ['Total CAPEX (Aquisição)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }],
+                    [{ content: 'VALOR TOTAL DA PROPOSTA', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
+                     { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
+                ],
+                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
+            });
+
+            // Adiciona Header/Footer na página final
+            addHeaderFooterPDF(doc, dataGeracao);
+            doc.save('Resumo_Proposta_Parceria_SESI_SME.pdf');
         }
 
         // --- EVENT LISTENERS ---
@@ -921,8 +1001,9 @@
             }
         });
 
-        // Bloco 4: Botão Gerar PDF
-        btnGerarPdf.addEventListener('click', gerarPDF);
+        // Bloco 4: Botões Gerar PDF (ATUALIZADOS)
+        btnGerarPdfCompleto.addEventListener('click', gerarPDFCompleto);
+        btnGerarPdfResumo.addEventListener('click', gerarPDFResumo); // NOVO LISTENER
 
         // --- INICIALIZAÇÃO ---
         renderizarListaEscolas(); 
@@ -933,3 +1014,4 @@
 
 </body>
 </html>
+
