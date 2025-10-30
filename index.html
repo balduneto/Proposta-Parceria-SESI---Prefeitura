@@ -247,7 +247,7 @@
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Incluir</th>
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd. por Escola</th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Opção de Custo (Unitário)</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Unitário e Opção</th>
                             <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Total</th>
                         </tr>
                     </thead>
@@ -259,7 +259,7 @@
             <!-- Rodapé Explicativo Bloco 3 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 3:</strong> Este bloco calcula o custo de aquisição (CAPEX), focado em materiais e equipamentos. O cálculo multiplica o <strong>Valor Unitário</strong> de cada item (seja locação ou aquisição) pela <strong>Quantidade por Escola</strong> e, em seguida, pelo <strong>Total de Escolas</strong> (do Bloco 1), somando todos os itens para obter o custo total.
+                    <strong>Resumo do Bloco 3:</strong> Este bloco calcula o custo de aquisição (CAPEX). O cálculo multiplica o <strong>Custo Unitário</strong> (seja 100% Aquisição ou 30% Locação) pela <strong>Quantidade por Escola</strong> e, em seguida, pelo <strong>Total de Escolas</strong> (do Bloco 1), somando todos os itens para obter o custo total.
                 </p>
             </div>
         </div>
@@ -352,24 +352,25 @@
         ];
 
         // --- BANCO DE DADOS CAPEX (BLOCO 3) ---
+        // Valor de Aquisição (Base) vindo da tabela
         const dadosCapex = [
-            { id: 'c1', produto: "Flauta", qtdPorEscola: 112, vlrLocacao: 62.00, vlrAquisicao: 62.00 },
-            { id: 'c2', produto: "Teclado", qtdPorEscola: 32, vlrLocacao: (11520 / 32).toFixed(2), vlrAquisicao: (38400 / 32).toFixed(2) }, // 360 e 1200
-            { id: 'c3', produto: "Violão", qtdPorEscola: 32, vlrLocacao: (6720 / 32).toFixed(2), vlrAquisicao: (22400 / 32).toFixed(2) }, // 210 e 700
-            { id: 'c4', produto: "Uniforme (Balé)", qtdPorEscola: 60, vlrLocacao: (6600 / 60).toFixed(2), vlrAquisicao: (6600 / 60).toFixed(2) }, // 110 e 110
-            { id: 'c5', produto: "Jogos de Tabuleiro", qtdPorEscola: 70, vlrLocacao: (12600 / 70).toFixed(2), vlrAquisicao: (12600 / 70).toFixed(2) }, // 180 e 180
-            { id: 'c6', produto: "Bola de Voleibol", qtdPorEscola: 4, vlrLocacao: (476 / 4).toFixed(2), vlrAquisicao: (476 / 4).toFixed(2) }, // 119 e 119
-            { id: 'c7', produto: "Mesa (Tênis)", qtdPorEscola: 8, vlrLocacao: (20000 / 8).toFixed(2), vlrAquisicao: (20000 / 8).toFixed(2) }, // 2500 e 2500
-            { id: 'c8', produto: "Kimono", qtdPorEscola: 336, vlrLocacao: (48303 / 336).toFixed(2), vlrAquisicao: (48303 / 336).toFixed(2) }, // 143.76 e 143.76
-            { id: 'c9', produto: "Colchonetes", qtdPorEscola: 70, vlrLocacao: (5355 / 70).toFixed(2), vlrAquisicao: (5355 / 70).toFixed(2) }, // 76.50 e 76.50
-            { id: 'c10', produto: "Raquete/tênis/bola/rede", qtdPorEscola: 8, vlrLocacao: (2000 / 8).toFixed(2), vlrAquisicao: (2000 / 8).toFixed(2) }, // 250 e 250
-            { id: 'c11', produto: "Tatame", qtdPorEscola: 1, vlrLocacao: (10200 / 1).toFixed(2), vlrAquisicao: (10200 / 1).toFixed(2) }, // 10200 e 10200
-            { id: 'c12', produto: "Maleta Robótica I", qtdPorEscola: 2, vlrLocacao: (5040 / 2).toFixed(2), vlrAquisicao: (16800 / 2).toFixed(2) }, // 2520 e 8400
-            { id: 'c13', produto: "Maleta Torneio", qtdPorEscola: 1, vlrLocacao: (3480 / 1).toFixed(2), vlrAquisicao: (11600 / 1).toFixed(2) }, // 3480 e 11600
-            { id: 'c14', produto: "Maleta Robótica II", qtdPorEscola: 3, vlrLocacao: (11400 / 3).toFixed(2), vlrAquisicao: (38000 / 3).toFixed(2) }, // 3800 e 12666.67
-            { id: 'c15', produto: "Carrinho de Notebook", qtdPorEscola: 1, vlrLocacao: (3600 / 1).toFixed(2), vlrAquisicao: (12000 / 1).toFixed(2) }, // 3600 e 12000
-            { id: 'c16', produto: "Notebook", qtdPorEscola: 21, vlrLocacao: (121800 / 21).toFixed(2), vlrAquisicao: (406000 / 21).toFixed(2) }, // 5800 e 19333.33
-            { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrLocacao: (4000 / 2).toFixed(2), vlrAquisicao: (4000 / 2).toFixed(2) } // 2000 e 2000
+            { id: 'c1', produto: "Flauta", qtdPorEscola: 112, vlrAquisicao: 62.00 },
+            { id: 'c2', produto: "Teclado", qtdPorEscola: 32, vlrAquisicao: (38400 / 32).toFixed(2) }, // 1200
+            { id: 'c3', produto: "Violão", qtdPorEscola: 32, vlrAquisicao: (22400 / 32).toFixed(2) }, // 700
+            { id: 'c4', produto: "Uniforme (Balé)", qtdPorEscola: 60, vlrAquisicao: (6600 / 60).toFixed(2) }, // 110
+            { id: 'c5', produto: "Jogos de Tabuleiro", qtdPorEscola: 70, vlrAquisicao: (12600 / 70).toFixed(2) }, // 180
+            { id: 'c6', produto: "Bola de Voleibol", qtdPorEscola: 4, vlrAquisicao: (476 / 4).toFixed(2) }, // 119
+            { id: 'c7', produto: "Mesa (Tênis)", qtdPorEscola: 8, vlrAquisicao: (20000 / 8).toFixed(2) }, // 2500
+            { id: 'c8', produto: "Kimono", qtdPorEscola: 336, vlrAquisicao: (48303 / 336).toFixed(2) }, // 143.76
+            { id: 'c9', produto: "Colchonetes", qtdPorEscola: 70, vlrAquisicao: (5355 / 70).toFixed(2) }, // 76.50
+            { id: 'c10', produto: "Raquete/tênis/bola/rede", qtdPorEscola: 8, vlrAquisicao: (2000 / 8).toFixed(2) }, // 250
+            { id: 'c11', produto: "Tatame", qtdPorEscola: 1, vlrAquisicao: (10200 / 1).toFixed(2) }, // 10200
+            { id: 'c12', produto: "Maleta Robótica I", qtdPorEscola: 2, vlrAquisicao: (16800 / 2).toFixed(2) }, // 8400
+            { id: 'c13', produto: "Maleta Torneio", qtdPorEscola: 1, vlrAquisicao: (11600 / 1).toFixed(2) }, // 11600
+            { id: 'c14', produto: "Maleta Robótica II", qtdPorEscola: 3, vlrAquisicao: (38000 / 3).toFixed(2) }, // 12666.67
+            { id: 'c15', produto: "Carrinho de Notebook", qtdPorEscola: 1, vlrAquisicao: (12000 / 1).toFixed(2) }, // 12000
+            { id: 'c16', produto: "Notebook", qtdPorEscola: 21, vlrAquisicao: (406000 / 21).toFixed(2) }, // 19333.33
+            { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrAquisicao: (4000 / 2).toFixed(2) } // 2000
         ];
 
         // --- REFERÊNCIAS DO DOM - BLOCO 1 ---
@@ -458,19 +459,16 @@
             });
         }
 
-        // --- FUNÇÃO PARA RENDERIZAR A TABELA CAPEX (BLOCO 3) ---
+        // --- FUNÇÃO PARA RENDERIZAR A TABELA CAPEX (BLOCO 3) --- (MODIFICADA)
         function renderizarTabelaCapex() {
             capexTabelaItensContainer.innerHTML = '';
             dadosCapex.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = 'capex-item-row';
-                let checkedAquisicao = 'checked';
-                let checkedLocacao = '';
                 
-                if (parseFloat(item.vlrLocacao) === parseFloat(item.vlrAquisicao)) {
-                    checkedLocacao = 'checked';
-                    checkedAquisicao = '';
-                }
+                // Nova Lógica: Calcular valor locacao com base no vlrAquisicao (base)
+                const vlrBaseAquisicao = parseFloat(item.vlrAquisicao);
+                const vlrBaseLocacao = vlrBaseAquisicao * 0.30; // 30% do valor de aquisição
 
                 tr.innerHTML = `
                     <td class="px-3 py-3 whitespace-nowrap align-top">
@@ -483,15 +481,20 @@
                         <input type="number" min="0" value="${item.qtdPorEscola}" class="capex-qtd-escola table-input">
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap align-top">
-                        <fieldset class="space-y-2">
-                            <label class="flex items-center space-x-2 text-sm">
-                                <input type="radio" name="custo-${item.id}" ${checkedLocacao} class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300" data-valor-unitario="${item.vlrLocacao}">
-                                <span>Locação (30%): ${formatarMoeda(item.vlrLocacao)}</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-sm">
-                                <input type="radio" name="custo-${item.id}" ${checkedAquisicao} class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300" data-valor-unitario="${item.vlrAquisicao}">
-                                <span>Aquisição: ${formatarMoeda(item.vlrAquisicao)}</span>
-                            </label>
+                        <fieldset>
+                            <!-- Opção 1: Aquisição (Agora é o Input Base) -->
+                            <div class="flex items-center space-x-2 text-sm mb-2">
+                                <input type="radio" name="custo-${item.id}" value="aquisicao" class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300" checked>
+                                <span>Aquisição:</span>
+                                <input type="number" step="0.01" value="${vlrBaseAquisicao.toFixed(2)}" class="capex-valor-base-input table-input w-24">
+                            </div>
+                            
+                            <!-- Opção 2: Locação (Calculado e Display) -->
+                            <div class="flex items-center space-x-2 text-sm">
+                                <input type="radio" name="custo-${item.id}" value="locacao" class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300">
+                                <span>Locação (30%):</span>
+                                <span class="capex-locacao-display font-medium text-gray-700">${formatarMoeda(vlrBaseLocacao)}</span>
+                            </div>
                         </fieldset>
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap text-right align-top">
@@ -523,27 +526,46 @@
             return totalOpex;
         }
         
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 3 (CAPEX) ---
+        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 3 (CAPEX) --- (MODIFICADA)
         function atualizarCapex(totalEscolas) {
             capexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
             let totalCapexGeral = 0;
             const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
+            
             itemRows.forEach(row => {
                 const checkbox = row.querySelector('.capex-checkbox');
                 const qtdPorEscolaInput = row.querySelector('.capex-qtd-escola');
                 const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
                 const custoTotalSpan = row.querySelector('.capex-custo-total');
+                
+                // Nova Lógica: Pega o valor base do input de aquisição
+                const valorBaseInput = row.querySelector('.capex-valor-base-input');
+                const valorBase = parseFloat(valorBaseInput.value) || 0;
+                
                 const qtdPorEscola = parseFloat(qtdPorEscolaInput.value) || 0;
                 let valorUnitarioEscolhido = 0;
-                if (radioSelecionado) {
-                    valorUnitarioEscolhido = parseFloat(radioSelecionado.dataset.valorUnitario) || 0;
+
+                // Define o valor unitário com base no radio selecionado
+                if (radioSelecionado.value === 'aquisicao') {
+                    valorUnitarioEscolhido = valorBase;
+                } else {
+                    // (radioSelecionado.value === 'locacao')
+                    valorUnitarioEscolhido = valorBase * 0.30;
                 }
+                
+                // Calcula o custo total para este item
                 const custoTotalItem = qtdPorEscola * valorUnitarioEscolhido * totalEscolas;
+
+                // Atualiza o span na linha da tabela
                 custoTotalSpan.innerText = formatarMoeda(custoTotalItem);
+
+                // Adiciona ao total geral se estiver marcado
                 if (checkbox.checked) {
                     totalCapexGeral += custoTotalItem;
                 }
             });
+
+            // Atualiza o Card de Total CAPEX
             capexTotalGeralEl.innerText = formatarMoeda(totalCapexGeral);
             return totalCapexGeral;
         }
@@ -692,7 +714,7 @@
             }
         }
 
-        // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) ---
+        // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) --- (MODIFICADA)
         function gerarPDFCompleto() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
@@ -793,13 +815,21 @@
                     const qtd = row.querySelector('.capex-qtd-escola').value;
                     const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
                     const custoTotalLinha = row.querySelector('.capex-custo-total').innerText;
+                    
+                    // Nova lógica para buscar valor no PDF
+                    const valorBase = parseFloat(row.querySelector('.capex-valor-base-input').value) || 0;
                     let tipoCusto = "N/A";
-                    let vlrUnitario = "N/A";
-                    if (radioSelecionado) {
-                        vlrUnitario = formatarMoeda(radioSelecionado.dataset.valorUnitario);
-                        tipoCusto = radioSelecionado.closest('label').innerText.split(':')[0].trim();
+                    let vlrUnitario = 0;
+
+                    if (radioSelecionado.value === 'aquisicao') {
+                        tipoCusto = "Aquisição";
+                        vlrUnitario = valorBase;
+                    } else {
+                        tipoCusto = "Locação (30%)";
+                        vlrUnitario = valorBase * 0.30;
                     }
-                    capexBody.push([produto, qtd, tipoCusto, vlrUnitario, { content: custoTotalLinha, styles: { halign: 'right' } }]);
+                    
+                    capexBody.push([produto, qtd, tipoCusto, formatarMoeda(vlrUnitario), { content: custoTotalLinha, styles: { halign: 'right' } }]);
                 }
             });
             capexBody.push([
@@ -951,12 +981,23 @@
         opexValorHoraDocenteInput.addEventListener('input', recalcularOpexEConsolidacao);
         opexIncluirMonitorCheck.addEventListener('change', recalcularOpexEConsolidacao);
         
-        // Bloco 3:
+        // Bloco 3: (MODIFICADO)
         capexTabelaItensContainer.addEventListener('input', (e) => {
-            if (e.target.classList.contains('capex-qtd-escola') || 
+            // Se mudar o input do valor base
+            if (e.target.classList.contains('capex-valor-base-input')) {
+                const row = e.target.closest('.capex-item-row');
+                const valorBase = parseFloat(e.target.value) || 0;
+                const valorLocacao = valorBase * 0.30;
+                const displaySpan = row.querySelector('.capex-locacao-display');
+                displaySpan.innerText = formatarMoeda(valorLocacao);
+                recalcularCapexEConsolidacao(); // Recalcula tudo
+            }
+            
+            // Se mudar a quantidade, o checkbox ou o tipo de custo
+            else if (e.target.classList.contains('capex-qtd-escola') || 
                 e.target.classList.contains('capex-checkbox') ||
                 e.target.classList.contains('capex-tipo-custo')) {
-                recalcularCapexEConsolidacao();
+                recalcularCapexEConsolidacao(); // Recalcula tudo
             }
         });
 
