@@ -89,6 +89,13 @@
         .select-input {
             @apply w-full text-center text-xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white py-2;
         }
+        /* Input para Bloco 2 */
+        .bl2-input {
+             @apply w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500;
+        }
+        .bl2-select {
+             @apply w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-4 md:p-10">
@@ -105,7 +112,6 @@
         <!-- Bloco 1: Simulador de Público-Alvo (Oficinas) -->
         <div class="mb-8">
             <h3 class="text-2xl font-bold text-gray-800">Bloco 1: Simulador de Público-Alvo (Oficinas)</h3>
-            <p class="text-gray-600">Selecione as unidades educacionais para iniciar a simulação e dimensionar a proposta.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -115,7 +121,10 @@
                 <!-- Filtro e Botão de Limpar -->
                 <div class="flex items-center gap-2 mb-4">
                     <input type="text" id="filtro-escola" placeholder="Buscar escola por nome..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                    <button id="btn-limpar-filtros" class="flex-shrink-0 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <button id="btn-selecionar-todas" class="flex-shrink-0 px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" title="Selecionar Todas as 46 Escolas">
+                        Todas
+                    </button>
+                    <button id="btn-limpar-filtros" class="flex-shrink-0 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" title="Limpar Seleção">
                         Limpar
                     </button>
                 </div>
@@ -169,68 +178,114 @@
             </p>
         </div>
         
-        <!-- Bloco 2: Cálculo de Custos Operacionais (OPEX) -->
+        <!-- Bloco 2: Cálculo de Custos Operacionais (OPEX) - NOVO MODELO -->
         <div class="mt-10 pt-8 border-t border-gray-200">
             <div class="mb-8">
                 <h3 class="text-2xl font-bold text-gray-800">Bloco 2: Cálculo de Custos Operacionais (OPEX)</h3>
-                <p class="text-gray-600">Simulação dos custos de docência com base no número de escolas.</p>
+                <p class="text-gray-600">Cálculo de custos de equipe com base no total de turmas e modelo de atendimento.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Card 1: Total Escolas -->
+            <!-- Linha 1: Base de Cálculo -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total de Escolas (do Bloco 1)</span>
+                    <span class="text-sm font-medium text-gray-500 block">Total Escolas (Base)</span>
                     <span id="opex-total-escolas" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">Valor-base vindo da seleção de escolas.</p>
                 </div>
-                
-                <!-- Card 2: Total Docentes (Calculado) -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total Docentes (12 por escola)</span>
-                    <span id="opex-total-docentes" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">Cálculo: (Total Escolas) x 12</p>
+                    <span class="text-sm font-medium text-gray-500 block">Total Turmas (Base)</span>
+                    <span id="opex-total-turmas" class="text-4xl font-bold text-cyan-700">0</span>
                 </div>
-
-                <!-- Card 3: Horas Anuais / Docente (Input) -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-horas-anuais-docente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Horas Anuais / Docente</label>
-                    <input type="number" id="opex-horas-anuais-docente" value="204" min="0" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                    <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: 204h).</p>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Período (Meses)</span>
+                    <span id="opex-periodo-meses" class="text-4xl font-bold text-cyan-700">9</span>
                 </div>
-
-                <!-- Card 4: Valor Hora / Docente (Input) -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-valor-hora-docente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Valor Hora / Docente (R$)</label>
-                    <input type="number" id="opex-valor-hora-docente" value="220.00" min="0" step="0.01" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                    <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: R$ 220,00).</p>
-                </div>
-
-                <!-- Card 5: Custo Monitor Pedagógico (Input) -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center justify-center mb-2">
-                        <label for="opex-incluir-monitor" class="text-sm font-medium text-gray-500 text-center mr-3">Custo Monitor Pedagógico</label>
-                        <label class="switch">
-                            <input type="checkbox" id="opex-incluir-monitor">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <span id="opex-custo-monitor-calculado" class="text-3xl font-bold text-gray-800 block text-center">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2 text-center">R$ 18.000,00 por docente/ano (R$ 1.500,00/mês)</p>
-                </div>
-
-                <!-- Card 6: Total OPEX (Resultado) -->
-                <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center flex flex-col justify-center">
-                    <span class="text-lg font-medium block">Total OPEX (Anual)</span>
-                    <span id="opex-total-anual" class="text-4xl font-bold my-2">R$ 0,00</span>
-                    <p class="text-xs text-cyan-100 mt-2">Cálculo: (Custo Docentes) + (Custo Monitores)</p>
-                </div>
-
             </div>
+
+            <!-- Linha 2: Inputs de Custo (Profissionais) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-modelo-atendimento" class="text-sm font-medium text-gray-500 block mb-2 text-center">Modelo de Atendimento</label>
+                    <select id="opex-modelo-atendimento" class="bl2-select">
+                        <option value="288">2 dias/sem (288h)</option>
+                        <option value="432">3 dias/sem (432h)</option>
+                    </select>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-bolsa-monitor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Bolsa Monitor/mês (1/turma)</label>
+                    <input type="number" id="opex-bolsa-monitor" value="1500.00" min="0" step="0.01" class="bl2-input">
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-valor-hora-professor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Valor Hora Professor (1/turma)</label>
+                    <input type="number" id="opex-valor-hora-professor" value="220.00" min="0" step="0.01" class="bl2-input">
+                </div>
+            </div>
+
+            <!-- Linha 3: Inputs de Custo (Equipe Técnica) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-custo-assistente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Assistente/mês (1/5 escolas)</label>
+                    <input type="number" id="opex-custo-assistente" value="5000.00" min="0" step="0.01" class="bl2-input">
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-custo-analista2" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Analista II/mês (1/5 escolas)</label>
+                    <input type="number" id="opex-custo-analista2" value="7000.00" min="0" step="0.01" class="bl2-input">
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <label for="opex-custo-analista3" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Analista III/mês (2 fixos)</label>
+                    <input type="number" id="opex-custo-analista3" value="9600.00" min="0" step="0.01" class="bl2-input">
+                </div>
+            </div>
+            
+            <!-- NOVA LINHA 3.5: Quantidades da Equipe Técnica (Calculado) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Qtd. Assistentes (Calc.)</span>
+                    <span id="opex-qtd-assistentes" class="text-4xl font-bold text-cyan-700">0</span>
+                    <p class="text-xs text-gray-400 mt-2">(1 para cada 5 escolas)</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Qtd. Analistas II (Calc.)</span>
+                    <span id="opex-qtd-analistas2" class="text-4xl font-bold text-cyan-700">0</span>
+                    <p class="text-xs text-gray-400 mt-2">(1 para cada 5 escolas)</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Qtd. Analistas III (Calc.)</span>
+                    <span id="opex-qtd-analistas3" class="text-4xl font-bold text-cyan-700">0</span>
+                    <p class="text-xs text-gray-400 mt-2">(2 fixos para o projeto)</p>
+                </div>
+            </div>
+
+            <!-- Linha 4: Resumo de Custos (Calculado) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Custo Total Monitores (9 meses)</span>
+                    <span id="opex-custo-monitores" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
+                    <p class="text-xs text-gray-400 mt-2">(Turmas x Bolsa x 9)</p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Custo Total Professores (Anual)</span>
+                    <span id="opex-custo-professores" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
+                    <p class="text-xs text-gray-400 mt-2">(Turmas x Horas x Valor Hora)</p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
+                    <span class="text-sm font-medium text-gray-500 block">Custo Equipe Técnica (9 meses)</span>
+                    <span id="opex-custo-equipe" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
+                    <p class="text-xs text-gray-400 mt-2">(Assist + An.II + An.III) x 9</p>
+                </div>
+            </div>
+
+            <!-- Linha 5: Total OPEX (Resultado) -->
+            <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center flex flex-col justify-center">
+                <span class="text-lg font-medium block">Total OPEX (Anual)</span>
+                <span id="opex-total-anual" class="text-4xl font-bold my-2">R$ 0,00</span>
+                <p class="text-xs text-cyan-100 mt-2">Cálculo: (Custo Monitores) + (Custo Professores) + (Custo Equipe Técnica)</p>
+            </div>
+
 
             <!-- Rodapé Explicativo Bloco 2 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 2:</strong> Este bloco calcula o custo operacional (OPEX). O cálculo multiplica o <strong>Total de Docentes</strong> (12 por escola) pelas <strong>Horas Anuais</strong> e <strong>Valor da Hora</strong>. Opcionalmente, inclui o <strong>Custo de Monitoria</strong> (R$ 18.000,00/ano por docente).
+                    <strong>Resumo do Bloco 2:</strong> Este bloco calcula o custo operacional (OPEX). O cálculo soma os custos de <strong>Monitores</strong> (baseado em turmas e bolsa mensal por 9 meses), <strong>Professores</strong> (baseado em turmas, horas do modelo e valor/hora) e <strong>Equipe Técnica</strong> (baseado em salários mensais por 9 meses).
                 </p>
             </div>
         </div>
@@ -302,21 +357,8 @@
                     <p class="text-xs text-gray-400 mt-2">Custo de aquisição de itens.</p>
                 </div>
 
-                <!-- Card 3: Card Assistentes -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center justify-center mb-2">
-                        <label for="bl4-incluir-assistentes" class="text-sm font-medium text-gray-500 text-center mr-3">Contratação Assistentes (5%)</label>
-                        <label class="switch">
-                            <input type="checkbox" id="bl4-incluir-assistentes">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <span id="bl4-custo-assistentes" class="text-3xl font-bold text-gray-800 block text-center">+ R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2 text-center">Calculado como 5% do subtotal (OPEX+CAPEX).</p>
-                </div>
-
-                <!-- Card 4: Condição de Pagamento (NOVO) -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                <!-- Card 3: Condição de Pagamento -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm col-span-1 md:col-span-2">
                     <label for="bl4-condicao-pagamento" class="text-sm font-medium text-gray-500 block mb-2 text-center">Condição de Pagamento (Proposta)</label>
                     <select id="bl4-condicao-pagamento" class="select-input">
                         <option value="mensal">Mensal (+3% Acréscimo)</option>
@@ -326,21 +368,20 @@
                     </select>
                     <span id="bl4-ajuste-pagamento-display" class="text-xl font-bold text-gray-800 block text-center mt-2">+ R$ 0,00</span>
                 </div>
-
             </div>
 
-            <!-- Card 5: Total Geral (Movido para baixo) -->
+            <!-- Card 4: Total Geral (Movido para baixo) -->
             <div class="bg-cyan-800 text-white rounded-lg p-6 shadow-xl text-center flex flex-col justify-center">
                 <span class="text-lg font-semibold block">Valor Total da Proposta (Cliente)</span>
                 <span id="total-geral-proposta" class="text-4xl font-bold my-2">R$ 0,00</span>
-                <p class="text-xs text-cyan-100 mt-2">Soma (OPEX + CAPEX + Assistentes + Ajuste Pagamento)</p>
+                <p class="text-xs text-cyan-100 mt-2">Soma (OPEX + CAPEX + Ajuste Pagamento)</p>
             </div>
 
 
             <!-- Rodapé Explicativo Bloco 4 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 4:</strong> Este bloco final consolida a proposta. Ele soma o <strong>Total OPEX</strong> (Bloco 2) com o <strong>Total CAPEX</strong> (Bloco 3) e o <strong>Custo Assistentes</strong> (opcional), e aplica o <strong>Ajuste de Pagamento</strong> (desconto ou acréscimo) para apresentar o <strong>Valor Total da Proposta</strong>.
+                    <strong>Resumo do Bloco 4:</strong> Este bloco final consolida a proposta. Ele soma o <strong>Total OPEX</strong> (Bloco 2) com o <strong>Total CAPEX</strong> (Bloco 3) e aplica o <strong>Ajuste de Pagamento</strong> (desconto ou acréscimo) para apresentar o <strong>Valor Total da Proposta</strong>.
                 </p>
             </div>
         </div>
@@ -358,27 +399,21 @@
                     <h4 class="text-lg font-semibold text-gray-700">Parâmetros de Custo Real (Interno)</h4>
                     
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <label for="bl5-margem-custo-hora-docente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Hora / Docente (Real)</label>
-                        <input type="number" id="bl5-margem-custo-hora-docente" value="150.00" min="0" step="0.01" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
+                        <label for="bl5-margem-custo-hora-professor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Hora / Professor (Real)</label>
+                        <input type="number" id="bl5-margem-custo-hora-professor" value="150.00" min="0" step="0.01" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
                         <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: R$ 150,00).</p>
                     </div>
 
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <label for="bl5-margem-capex-percent" class="text-sm font-medium text-gray-500 block mb-2 text-center">Margem CAPEX Inclusa (%)</label>
+                        <label for="bl5-margem-capex-percent" class="text-sm font-medium text-gray-500 block mb-2 text-center">Margem CAPEX Inclusa (%)</LAbel>
                         <input type="number" id="bl5-margem-capex-percent" value="20" min="0" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
                         <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: 20%).</p>
                     </div>
 
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Custo Monitores (Real)</span>
-                        <span id="bl5-margem-custo-monitores" class="text-2xl font-bold text-gray-800">R$ 0,00</span>
+                        <span class="text-sm font-medium text-gray-500 block">Custo OPEX (Monitores + Eq. Técnica)</span>
+                        <span id="bl5-margem-custo-opex-fixo" class="text-2xl font-bold text-gray-800">R$ 0,00</span>
                         <p class="text-xs text-gray-400 mt-1">(Custo real espelhado do Bloco 2)</p>
-                    </div>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Custo Assistentes (Real)</span>
-                        <span id="bl5-margem-custo-assistentes" class="text-2xl font-bold text-gray-800">R$ 0,00</span>
-                        <p class="text-xs text-gray-400 mt-1">(Custo real espelhado do Bloco 4)</p>
                     </div>
                 </div>
 
@@ -423,7 +458,7 @@
             <!-- Rodapé Explicativo Bloco 5 -->
             <div class="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
                 <p class="text-sm text-red-700">
-                    <strong>Resumo do Bloco 5:</strong> Este bloco é uma ferramenta interna de negociação. Ele compara o <strong>Valor Total da Proposta</strong> (Bloco 4) com o <strong>Custo Real (SESI)</strong>, calculado a partir dos parâmetros de custo editáveis (Custo Hora Docente Real, Margem CAPEX), revelando o <strong>Lucro Bruto</strong> da operação.
+                    <strong>Resumo do Bloco 5:</strong> Este bloco é uma ferramenta interna de negociação. Ele compara o <strong>Valor Total da Proposta</strong> (Bloco 4) com o <strong>Custo Real (SESI)</strong>, calculado a partir dos parâmetros de custo editáveis (Custo Hora Professor Real, Margem CAPEX), revelando o <strong>Lucro Bruto</strong> da operação.
                 </p>
             </div>
         </div>
@@ -450,20 +485,58 @@
 
     <script>
         // --- BANCO DE DADOS DAS ESCOLAS (BLOCO 1) ---
+        // Atualizado com a tabela completa de 46 escolas (image_06c7ff.png)
         const dadosEscolas = [
-            { id: 1, nome: "EM Cel. José Viana", alunos: 336, turmas: 12 },
-            { id: 2, nome: "EM José Alves Vila Nova", alunos: 336, turmas: 12 },
-            { id: 3, nome: "EM Prof. Trajano de Sá Guimarães", alunos: 420, turmas: 12 },
-            { id: 4, nome: "EM Prof. Amélia Fernandes Martins", alunos: 336, turmas: 12 },
-            { id: 5, nome: "EM Prof. Cleonice Monteiro Wolney", alunos: 168, turmas: 8 },
-            { id: 6, nome: "EM João Clarimundo de Oliveira", alunos: 200, turmas: 8 },
-            { id: 7, nome: "EM Grande Retiro", alunos: 336, turmas: 12 },
-            { id: 8, nome: "EM Dom Tomás Balduino", alunos: 336, turmas: 12 },
-            { id: 9, nome: "EM Renascer", alunos: 420, turmas: 14 }
+            { id: 1, nome: "EM ABRAO RASSI", alunos: 329, turmas: 12 },
+            { id: 2, nome: "EM ALONSO DIAS PINHEIRO", alunos: 220, turmas: 8 },
+            { id: 3, nome: "EM ANA DAS NEVES DE FREITAS", alunos: 204, turmas: 9 },
+            { id: 4, nome: "EM BENEDITO SOARES DE CASTRO", alunos: 190, turmas: 7 },
+            { id: 5, nome: "EM DE TEMPO INTEGRAL EUNICE WEAVER", alunos: 218, turmas: 8 },
+            { id: 6, nome: "EM DE TEMPO INTEGRAL JARDIM DAS AROEIRAS", alunos: 212, turmas: 8 },
+            { id: 7, nome: "EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO", alunos: 266, turmas: 12 },
+            { id: 8, nome: "EM DE TEMPO INTEGRAL JUSCELINO KUBITSCHEK", alunos: 169, turmas: 7 },
+            { id: 9, nome: "EM DE TEMPO INTEGRAL PRESIDENTE DUTRA", alunos: 230, turmas: 8 },
+            { id: 10, nome: "EM DE TEMPO INTEGRAL RUI RODRIGUES", alunos: 127, turmas: 6 },
+            { id: 11, nome: "EM DE TEMPO INTEGRAL SETOR GRAJAU", alunos: 344, turmas: 12 },
+            { id: 12, nome: "EM DONA BELINHA", alunos: 246, turmas: 9 },
+            { id: 13, nome: "EM FRANCISCO BIBIANO DE CARVALHO", alunos: 225, turmas: 8 },
+            { id: 14, nome: "EM FREI DEMETRIO ZANQUETA", alunos: 275, turmas: 10 },
+            { id: 15, nome: "EM FREI NAZARENO CONFALONI", alunos: 323, turmas: 12 },
+            { id: 16, nome: "EM GEORGETA RIVALINO DUARTE", alunos: 195, turmas: 7 },
+            { id: 17, nome: "EM JARBAS JAYME", alunos: 199, turmas: 7 },
+            { id: 18, nome: "EM JOAQUIM CÂMARA FILHO", alunos: 330, turmas: 12 },
+            { id: 19, nome: "EM JOSÉ CARLOS PIMENTA", alunos: 140, turmas: 9 },
+            { id: 20, nome: "EM LIONS CLUBE DE GOIÂNIA TOCANTINS", alunos: 351, turmas: 13 },
+            { id: 21, nome: "EM MARECHAL RIBAS JÚNIOR", alunos: 341, turmas: 14 },
+            { id: 22, nome: "EM MARIA ARAÚJO DE FREITAS", alunos: 360, turmas: 15 },
+            { id: 23, nome: "EM MARIA GENOVEVA", alunos: 134, turmas: 5 },
+            { id: 24, nome: "EM MOISÉS SANTANA", alunos: 166, turmas: 6 },
+            { id: 25, nome: "EM MÔNICA DE CASTRO CARNEIRO", alunos: 281, turmas: 10 },
+            { id: 26, nome: "EM OSTERNO POTENCIANO E SILVA", alunos: 221, turmas: 8 },
+            { id: 27, nome: "EM PAULO TEIXEIRA DE MENDONCA", alunos: 177, turmas: 6 },
+            { id: 28, nome: "EM PROFR MARIA CAMARGO", alunos: 242, turmas: 10 },
+            { id: 29, nome: "EM PROFESSOR LOURENCO FERREIRA CAMPOS", alunos: 300, turmas: 11 },
+            { id: 30, nome: "EM PROFESSORA LOUISINHA", alunos: 348, turmas: 14 },
+            { id: 31, nome: "EM PROFESSORA MARIA NOSIDIA PALMEIRAS DAS NEVES", alunos: 287, turmas: 10 },
+            { id: 32, nome: "EM PROFESSORA SILENE DE ANDRADE", alunos: 170, turmas: 6 },
+            { id: 33, nome: "EM REGINA HELOU", alunos: 278, turmas: 10 },
+            { id: 34, nome: "EM SANTA RITA DE CÁSSIA (VALE DAS POMBAS)", alunos: 103, turmas: 8 },
+            { id: 35, nome: "EM SANTA TEREZINHA", alunos: 130, turmas: 7 },
+            { id: 36, nome: "EM SANTO ANTÔNIO", alunos: 246, turmas: 10 },
+            { id: 37, nome: "EM SEBASTIÃO ARANTES", alunos: 244, turmas: 10 },
+            { id: 38, nome: "EM STEPHÂNIA ALVES BISPO", alunos: 283, turmas: 10 },
+            { id: 39, nome: "EM TARGINO DE AGUIAR", alunos: 193, turmas: 7 },
+            { id: 40, nome: "EM VILA ROSA", alunos: 222, turmas: 8 },
+            { id: 41, nome: "EM ZEVERA ANDREA VECCI", alunos: 344, turmas: 13 },
+            { id: 42, nome: "EMTI PROFESSORA ARLEI GARCIA", alunos: 414, turmas: 16 },
+            { id: 43, nome: "EMTI ROTARY CLUB MDE GOIANIA", alunos: 180, turmas: 8 },
+            { id: 44, nome: "EMTI SANTA MARTA", alunos: 182, turmas: 9 },
+            { id: 45, nome: "ESCOLA JOÃO CRISOSTOMO ROSA", alunos: 135, turmas: 5 },
+            { id: 46, nome: "ESCOLA MUNICIPAL GO-04", alunos: 92, turmas: 5 }
         ];
 
         // --- BANCO DE DADOS CAPEX (BLOCO 3) ---
-        // Valores baseados na tabela image_e6839d.png
+        // Valores baseados na tabela image_e63e63a.png
         const dadosCapex = [
             { id: 'c1', produto: "Flauta", qtdPorEscola: 112, vlrAquisicao: 62.00 },
             { id: 'c2', produto: "Teclado", qtdPorEscola: 20, vlrAquisicao: 1200.00 },
@@ -481,7 +554,9 @@
             { id: 'c14', produto: "Maleta Robótica II", qtdPorEscola: 10, vlrAquisicao: 3900.00 },
             { id: 'c15', produto: "Carrinho de Notebook", qtdPorEscola: 2, vlrAquisicao: 8000.00 },
             { id: 'c16', produto: "Notebook", qtdPorEscola: 73, vlrAquisicao: 6200.00 },
-            { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrAquisicao: 2000.00 }
+            { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrAquisicao: 2000.00 },
+            { id: 'c18', produto: "Kit Artes Circenses", qtdPorEscola: 1, vlrAquisicao: 24800.00 },
+            { id: 'c19', produto: "Kit Robótica", qtdPorEscola: 1, vlrAquisicao: 39920.00 }
         ];
 
         // --- REFERÊNCIAS DO DOM - BLOCO 1 ---
@@ -495,15 +570,28 @@
         const totalAlunosFinalEl = document.getElementById('total-alunos-final');
         const analisePropostaEl = document.getElementById('analise-proposta');
         const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+        const btnSelecionarTodas = document.getElementById('btn-selecionar-todas');
 
         // --- REFERÊNCIAS DO DOM - BLOCO 2 ---
         const opexTotalEscolasEl = document.getElementById('opex-total-escolas');
-        const opexTotalDocentesEl = document.getElementById('opex-total-docentes');
-        const opexHorasAnuaisInput = document.getElementById('opex-horas-anuais-docente');
-        const opexValorHoraDocenteInput = document.getElementById('opex-valor-hora-docente');
-        const opexIncluirMonitorCheck = document.getElementById('opex-incluir-monitor');
-        const opexCustoMonitorCalculadoEl = document.getElementById('opex-custo-monitor-calculado');
+        const opexTotalTurmasEl = document.getElementById('opex-total-turmas');
+        const opexPeriodoMesesEl = document.getElementById('opex-periodo-meses');
+        const opexModeloAtendimentoSelect = document.getElementById('opex-modelo-atendimento');
+        const opexBolsaMonitorInput = document.getElementById('opex-bolsa-monitor');
+        const opexValorHoraProfessorInput = document.getElementById('opex-valor-hora-professor');
+        const opexCustoAssistenteInput = document.getElementById('opex-custo-assistente');
+        const opexCustoAnalista2Input = document.getElementById('opex-custo-analista2');
+        const opexCustoAnalista3Input = document.getElementById('opex-custo-analista3');
+        // NOVAS REFERÊNCIAS
+        const opexQtdAssistentesEl = document.getElementById('opex-qtd-assistentes');
+        const opexQtdAnalistas2El = document.getElementById('opex-qtd-analistas2');
+        const opexQtdAnalistas3El = document.getElementById('opex-qtd-analistas3');
+        // FIM DAS NOVAS REFERÊNCIAS
+        const opexCustoMonitoresEl = document.getElementById('opex-custo-monitores');
+        const opexCustoProfessoresEl = document.getElementById('opex-custo-professores');
+        const opexCustoEquipeEl = document.getElementById('opex-custo-equipe');
         const opexTotalAnualEl = document.getElementById('opex-total-anual');
+
 
         // --- REFERÊNCIAS DO DOM - BLOCO 3 ---
         const capexTotalEscolasEl = document.getElementById('capex-total-escolas');
@@ -513,8 +601,8 @@
         // --- REFERÊNCIAS DO DOM - BLOCO 4 ---
         const totalOpexConsolidadoEl = document.getElementById('total-opex-consolidado');
         const totalCapexConsolidadoEl = document.getElementById('total-capex-consolidado');
-        const bl4IncluirAssistentesCheck = document.getElementById('bl4-incluir-assistentes'); 
-        const bl4CustoAssistentesEl = document.getElementById('bl4-custo-assistentes'); 
+        // const bl4IncluirAssistentesCheck = document.getElementById('bl4-incluir-assistentes'); // REMOVIDO
+        // const bl4CustoAssistentesEl = document.getElementById('bl4-custo-assistentes'); // REMOVIDO
         const bl4CondicaoPagamentoSelect = document.getElementById('bl4-condicao-pagamento'); 
         const bl4AjustePagamentoDisplayEl = document.getElementById('bl4-ajuste-pagamento-display'); 
         const totalGeralPropostaEl = document.getElementById('total-geral-proposta');
@@ -522,10 +610,9 @@
         const btnGerarPdfResumo = document.getElementById('btn-gerar-pdf-resumo');
 
         // --- REFERÊNCIAS DO DOM - BLOCO 5 (MARGEM) ---
-        const bl5MargemCustoHoraDocenteInput = document.getElementById('bl5-margem-custo-hora-docente');
+        const bl5MargemCustoHoraProfessorInput = document.getElementById('bl5-margem-custo-hora-professor');
         const bl5MargemCapexPercentInput = document.getElementById('bl5-margem-capex-percent');
-        const bl5MargemCustoMonitoresEl = document.getElementById('bl5-margem-custo-monitores');
-        const bl5MargemCustoAssistentesEl = document.getElementById('bl5-margem-custo-assistentes');
+        const bl5MargemCustoOpexFixoEl = document.getElementById('bl5-margem-custo-opex-fixo');
         const bl5MargemPropostaClienteEl = document.getElementById('bl5-margem-proposta-cliente');
         const bl5MargemCustoRealSesiEl = document.getElementById('bl5-margem-custo-real-sesi');
         const bl5MargemLucroBrutoEl = document.getElementById('bl5-margem-lucro-bruto');
@@ -637,23 +724,47 @@
         }
 
         // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 2 (OPEX) ---
-        function atualizarOpex(totalEscolas) {
+        function atualizarOpex(totalEscolas, totalTurmas) {
+            // Atualiza displays base
             opexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-            const docentesPorEscola = 12;
-            const horasAnuais = parseFloat(opexHorasAnuaisInput.value) || 0;
-            const valorHora = parseFloat(opexValorHoraDocenteInput.value) || 0;
-            const incluirMonitor = opexIncluirMonitorCheck.checked;
-            const valorAnualMonitorPorDocente = 18000;
-            const totalDocentes = totalEscolas * docentesPorEscola;
-            opexTotalDocentesEl.innerText = totalDocentes.toLocaleString('pt-BR');
-            const custoDocentes = totalDocentes * horasAnuais * valorHora;
-            let custoMonitores = 0;
-            if (incluirMonitor) {
-                custoMonitores = totalDocentes * valorAnualMonitorPorDocente;
-            }
-            opexCustoMonitorCalculadoEl.innerText = formatarMoeda(custoMonitores);
-            const totalOpex = custoDocentes + custoMonitores;
+            opexTotalTurmasEl.innerText = totalTurmas.toLocaleString('pt-BR');
+            
+            // Lê valores dos inputs
+            const periodoMeses = parseInt(opexPeriodoMesesEl.innerText) || 9;
+            const modeloHoras = parseFloat(opexModeloAtendimentoSelect.value) || 288;
+            const bolsaMonitor = parseFloat(opexBolsaMonitorInput.value) || 0;
+            const valorHoraProfessor = parseFloat(opexValorHoraProfessorInput.value) || 0;
+            const custoAssistente = parseFloat(opexCustoAssistenteInput.value) || 0;
+            const custoAnalista2 = parseFloat(opexCustoAnalista2Input.value) || 0;
+            const custoAnalista3 = parseFloat(opexCustoAnalista3Input.value) || 0;
+
+            // Calcula Custos
+            const custoMonitores = totalTurmas * bolsaMonitor * periodoMeses;
+            const custoProfessores = totalTurmas * modeloHoras * valorHoraProfessor;
+
+            const numAssistentes = Math.ceil(totalEscolas / 5);
+            const numAnalistas2 = Math.ceil(totalEscolas / 5);
+            const numAnalistas3 = totalEscolas > 0 ? 2 : 0; // Custo fixo do projeto
+
+            // ATUALIZA DOM - NOVOS CARDS DE QUANTIDADE
+            opexQtdAssistentesEl.innerText = numAssistentes.toLocaleString('pt-BR');
+            opexQtdAnalistas2El.innerText = numAnalistas2.toLocaleString('pt-BR');
+            opexQtdAnalistas3El.innerText = numAnalistas3.toLocaleString('pt-BR');
+            
+            const custoEquipeTecnica = (
+                (numAssistentes * custoAssistente) +
+                (numAnalistas2 * custoAnalista2) +
+                (numAnalistas3 * custoAnalista3)
+            ) * periodoMeses;
+
+            const totalOpex = custoMonitores + custoProfessores + custoEquipeTecnica;
+
+            // Atualiza displays de custo
+            opexCustoMonitoresEl.innerText = formatarMoeda(custoMonitores);
+            opexCustoProfessoresEl.innerText = formatarMoeda(custoProfessores);
+            opexCustoEquipeEl.innerText = formatarMoeda(custoEquipeTecnica);
             opexTotalAnualEl.innerText = formatarMoeda(totalOpex);
+            
             return totalOpex;
         }
         
@@ -694,13 +805,9 @@
         // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 4 (CONSOLIDAÇÃO) ---
         function atualizarConsolidacao(totalOpex, totalCapex) {
             const subTotalOpexCapex = totalOpex + totalCapex;
-            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
             
-            let custoAssistentes = 0;
-            if (incluirAssistentes) {
-                custoAssistentes = subTotalOpexCapex * 0.05; // 5% do subtotal
-            }
-            const subtotalProposta = subTotalOpexCapex + custoAssistentes;
+            // Lógica de Assistentes foi MOVIDA para o Bloco 2 (Equipe Técnica)
+            const subtotalProposta = subTotalOpexCapex; // Apenas a soma simples
 
             // Lógica de Pagamento
             const condicaoPagamento = bl4CondicaoPagamentoSelect.value;
@@ -715,7 +822,7 @@
             // Atualiza DOM Bloco 4
             totalOpexConsolidadoEl.innerText = formatarMoeda(totalOpex);
             totalCapexConsolidadoEl.innerText = formatarMoeda(totalCapex);
-            bl4CustoAssistentesEl.innerText = "+ " + formatarMoeda(custoAssistentes);
+            // bl4CustoAssistentesEl.innerText = "+ R$ 0,00"; // Campo removido
             bl4AjustePagamentoDisplayEl.innerText = (ajustePagamentoValor >= 0 ? "+ " : "") + formatarMoeda(ajustePagamentoValor);
             totalGeralPropostaEl.innerText = formatarMoeda(totalGeral);
             
@@ -729,38 +836,31 @@
             const totalPropostaCliente = parseMoeda(totalGeralPropostaEl.innerText);
             const totalCapexProposta = parseMoeda(totalCapexConsolidadoEl.innerText);
             
-            // 2. Obter Escopo
-            const totalDocentes = parseMoeda(opexTotalDocentesEl.innerText);
-            const horasAnuais = parseFloat(opexHorasAnuaisInput.value) || 0;
-            const monitorIncluido = opexIncluirMonitorCheck.checked;
-            const assistenteIncluido = bl4IncluirAssistentesCheck.checked;
+            // 2. Obter Escopo (do Bloco 1 e 2)
+            const totalTurmas = parseMoeda(opexTotalTurmasEl.innerText);
+            const modeloHoras = parseFloat(opexModeloAtendimentoSelect.value) || 288;
+            const custoMonitoresProposta = parseMoeda(opexCustoMonitoresEl.innerText);
+            const custoEquipeTecnicaProposta = parseMoeda(opexCustoEquipeEl.innerText);
 
             // 3. Obter Parâmetros de Custo Real (Interno)
-            const custoHoraReal = parseFloat(bl5MargemCustoHoraDocenteInput.value) || 0;
+            const custoHoraRealProfessor = parseFloat(bl5MargemCustoHoraProfessorInput.value) || 0;
             const margemCapexPercent = parseFloat(bl5MargemCapexPercentInput.value) || 0;
 
             // 4. Calcular Custo Real (SESI)
+            
             // 4a. Custo OPEX Real
-            const custoDocentesReal = totalDocentes * horasAnuais * custoHoraReal;
-            let custoMonitoresReal = 0;
-            if (monitorIncluido) {
-                custoMonitoresReal = totalDocentes * 18000; // Custo fixo
-            }
-            const custoOpexReal = custoDocentesReal + custoMonitoresReal;
+            // Custo real dos professores (o único com margem variável)
+            const custoProfessoresReal = totalTurmas * modeloHoras * custoHoraRealProfessor;
+            // Custos de Monitores e Equipe são custos fixos (preço = custo)
+            const custoOpexFixoReal = custoMonitoresProposta + custoEquipeTecnicaProposta;
+            const custoOpexReal = custoProfessoresReal + custoOpexFixoReal;
             
             // 4b. Custo CAPEX Real
             // Preço = Custo * (1 + Margem) => Custo = Preço / (1 + Margem)
             const custoCapexReal = totalCapexProposta / (1 + (margemCapexPercent / 100));
 
-            // 4c. Custo Assistentes Real
-            // Assumindo que o custo do assistente é 5% do *custo real* (Opex+Capex)
-            let custoAssistentesReal = 0;
-            if (assistenteIncluido) {
-                custoAssistentesReal = (custoOpexReal + custoCapexReal) * 0.05;
-            }
-
-            // 4d. Custo Total Real
-            const custoTotalRealSesi = custoOpexReal + custoCapexReal + custoAssistentesReal;
+            // 4c. Custo Total Real
+            const custoTotalRealSesi = custoOpexReal + custoCapexReal;
 
             // 5. Calcular Lucratividade
             const lucroBruto = totalPropostaCliente - custoTotalRealSesi;
@@ -771,8 +871,7 @@
             bl5MargemLucroBrutoEl.innerText = formatarMoeda(lucroBruto > 0 ? lucroBruto : 0);
             
             // Atualiza displays de custo real (para transparência)
-            bl5MargemCustoMonitoresEl.innerText = formatarMoeda(custoMonitoresReal);
-            bl5MargemCustoAssistentesEl.innerText = formatarMoeda(custoAssistentesReal);
+            bl5MargemCustoOpexFixoEl.innerText = formatarMoeda(custoOpexFixoReal);
 
             // 7. Atualizar Régua de Lucratividade
             let percentCusto = 0;
@@ -823,7 +922,7 @@
             atualizarAnalise(totalEscolas, totalAlunosBase, totalTurmas, totalAlunosFinal, mediaAlunos);
 
             // Recalcula Bloco 2
-            const totalOpexNumerico = atualizarOpex(totalEscolas); 
+            const totalOpexNumerico = atualizarOpex(totalEscolas, totalTurmas); 
             
             // Recalcula Bloco 3
             const totalCapexNumerico = atualizarCapex(totalEscolas);
@@ -859,11 +958,25 @@
             atualizarTotais();
         }
 
+        // --- FUNÇÃO PARA SELECIONAR TODAS AS ESCOLAS (BLOCO 1) ---
+        function selecionarTodasEscolas() {
+            filtroEscolaInput.value = ''; // Limpa o filtro
+            renderizarListaEscolas(); // Renderiza todas as 46
+            const checkboxes = document.querySelectorAll('#lista-escolas .escola-checkbox');
+            checkboxes.forEach(check => {
+                check.checked = true;
+            });
+            atualizarTotais(); // Recalcula tudo
+        }
+
         // --- FUNÇÃO DE CALLBACK PARA RECALCULAR BLOCO 2 E 4 ---
         function recalcularOpexEConsolidacao() {
             const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
             const totalEscolasAtual = parseInt(escolasStr) || 0;
-            const totalOpexNumerico = atualizarOpex(totalEscolasAtual);
+            const turmasStr = totalTurmasEl.innerText.replace(/\./g, '');
+            const totalTurmasAtual = parseInt(turmasStr) || 0;
+            
+            const totalOpexNumerico = atualizarOpex(totalEscolasAtual, totalTurmasAtual);
             const totalCapexNumerico = parseMoeda(capexTotalGeralEl.innerText);
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
         }
@@ -872,8 +985,11 @@
         function recalcularCapexEConsolidacao() {
             const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
             const totalEscolasAtual = parseInt(escolasStr) || 0;
+            const turmasStr = totalTurmasEl.innerText.replace(/\./g, '');
+            const totalTurmasAtual = parseInt(turmasStr) || 0;
+
             const totalCapexNumerico = atualizarCapex(totalEscolasAtual);
-            const totalOpexNumerico = parseMoeda(opexTotalAnualEl.innerText);
+            const totalOpexNumerico = parseMoeda(opexTotalAnualEl.innerText); // Pega o valor atual
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
         }
 
@@ -892,11 +1008,12 @@
             
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
-                doc.setFontSize(18);
+                doc.setFontSize(14);
                 doc.setFont('helvetica', 'bold');
                 doc.setTextColor(40, 40, 40);
                 let textY = 18;
                 doc.text("Proposta de Parceria - Atividades Complementares (Tempo Integral)", 15, textY);
+                
                 if (logoImg) {
                     try {
                         const logoHeight = 12;
@@ -909,6 +1026,7 @@
                         doc.text("Logo", 180, 15);
                     }
                 }
+                
                 doc.setLineWidth(0.5);
                 doc.line(15, 28, 195, 28);
                 doc.setFontSize(8);
@@ -981,18 +1099,27 @@
             doc.setTextColor(40, 40, 40);
             doc.text("BLOCO 2: CUSTOS OPERACIONAIS (OPEX)", 15, y);
             y += 8;
+            const modeloAtendimentoTexto = opexModeloAtendimentoSelect.options[opexModeloAtendimentoSelect.selectedIndex].text;
             doc.autoTable({
                 startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
                 body: [
                     ['Total de Escolas (Base)', opexTotalEscolasEl.innerText],
-                    ['Docentes por Escola (Fixo)', '12'],
-                    ['Total Docentes (Calculado)', opexTotalDocentesEl.innerText],
-                    ['Horas Anuais / Docente (Editado)', opexHorasAnuaisInput.value],
-                    ['Valor Hora / Docente (Editado)', formatarMoeda(opexValorHoraDocenteInput.value)],
-                    ['Custo Monitor Pedagógico Incluído', opexIncluirMonitorCheck.checked ? 'Sim' : 'Não'],
-                    ['Valor Custo Monitores (Total)', opexCustoMonitorCalculadoEl.innerText],
-                    [{ content: 'Total OPEX (Anual)', styles: { fontStyle: 'bold', fontSize: 10 } },
-                     { content: opexTotalAnualEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }]
+                    ['Total de Turmas (Base)', opexTotalTurmasEl.innerText],
+                    ['Período (Meses)', opexPeriodoMesesEl.innerText],
+                    ['Modelo de Atendimento', modeloAtendimentoTexto],
+                    ['Bolsa Monitor/mês (Editado)', formatarMoeda(opexBolsaMonitorInput.value)],
+                    ['Valor Hora Professor (Editado)', formatarMoeda(opexValorHoraProfessorInput.value)],
+                    ['Qtd. Assistentes (Calc.)', opexQtdAssistentesEl.innerText],
+                    ['Custo Assistente/mês (Editado)', formatarMoeda(opexCustoAssistenteInput.value)],
+                    ['Qtd. Analistas II (Calc.)', opexQtdAnalistas2El.innerText],
+                    ['Custo Analista II/mês (Editado)', formatarMoeda(opexCustoAnalista2Input.value)],
+                    ['Qtd. Analistas III (Calc.)', opexQtdAnalistas3El.innerText],
+                    ['Custo Analista III/mês (Editado)', formatarMoeda(opexCustoAnalista3Input.value)],
+                    [{ content: 'Custo Total Monitores (9 meses)', styles: { fontStyle: 'bold' } }, { content: opexCustoMonitoresEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
+                    [{ content: 'Custo Total Professores (Anual)', styles: { fontStyle: 'bold' } }, { content: opexCustoProfessoresEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
+                    [{ content: 'Custo Total Equipe Técnica (9 meses)', styles: { fontStyle: 'bold' } }, { content: opexCustoEquipeEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
+                    [{ content: 'Total OPEX (Anual)', styles: { fontStyle: 'bold', fontSize: 10, fillColor: [241, 245, 249] } },
+                     { content: opexTotalAnualEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right', fillColor: [241, 245, 249] } }]
                 ],
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
@@ -1062,9 +1189,6 @@
             doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA (SESI)", 15, finalY);
             finalY += 10;
             
-            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
-            const custoAssistentesValor = parseMoeda(bl4CustoAssistentesEl.innerText);
-            
             const condicaoPagamentoEl = bl4CondicaoPagamentoSelect;
             const condicaoTexto = condicaoPagamentoEl.options[condicaoPagamentoEl.selectedIndex].text;
             const ajusteValor = parseMoeda(bl4AjustePagamentoDisplayEl.innerText);
@@ -1073,11 +1197,6 @@
                 ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
                 ['Total CAPEX (Proposta)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
             ];
-            if (incluirAssistentes) {
-                bodyConsolidacaoCompleto.push(
-                    ['(+) Custo Assistentes (5%)', { content: formatarMoeda(custoAssistentesValor), styles: { halign: 'right' } }]
-                );
-            }
              if (ajusteValor !== 0) {
                 bodyConsolidacaoCompleto.push(
                     [`Ajuste Cond. Pagamento (${condicaoTexto})`, { content: formatarMoeda(ajusteValor), styles: { halign: 'right' } }]
@@ -1131,11 +1250,14 @@
             doc.setFont('helvetica', 'bold');
             doc.text("BLOCO 2: RESUMO DE CUSTOS OPERACIONAIS (OPEX)", 15, y);
             y += 8;
+            const modeloAtendimentoTexto = opexModeloAtendimentoSelect.options[opexModeloAtendimentoSelect.selectedIndex].text;
             doc.autoTable({
                 startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
                 body: [
-                    ['Total Docentes (12/escola)', opexTotalDocentesEl.innerText],
-                    ['Custo Monitores Incluído', opexIncluirMonitorCheck.checked ? 'Sim' : 'Não'],
+                    ['Modelo de Atendimento', modeloAtendimentoTexto],
+                    ['Custo Total Monitores (9 meses)', opexCustoMonitoresEl.innerText],
+                    ['Custo Total Professores (Anual)', opexCustoProfessoresEl.innerText],
+                    ['Custo Total Equipe Técnica (9 meses)', opexCustoEquipeEl.innerText],
                     [{content: 'Total OPEX (Anual)', styles: {fontStyle: 'bold', fontSize: 10}}, 
                      {content: opexTotalAnualEl.innerText, styles: {fontStyle: 'bold', fontSize: 10, halign: 'right'}}]
                 ],
@@ -1149,9 +1271,6 @@
             doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA (SESI)", 15, y);
             y += 10;
             
-            const incluirAssistentes = bl4IncluirAssistentesCheck.checked;
-            const custoAssistentesValor = parseMoeda(bl4CustoAssistentesEl.innerText);
-            
             const condicaoPagamentoEl = bl4CondicaoPagamentoSelect;
             const condicaoTexto = condicaoPagamentoEl.options[condicaoPagamentoEl.selectedIndex].text;
             const ajusteValor = parseMoeda(bl4AjustePagamentoDisplayEl.innerText);
@@ -1160,11 +1279,6 @@
                 ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
                 ['Total CAPEX (Proposta)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
             ];
-            if (incluirAssistentes) {
-                bodyConsolidacaoResumo.push(
-                    ['(+) Custo Assistentes (5%)', { content: formatarMoeda(custoAssistentesValor), styles: { halign: 'right' } }]
-                );
-            }
              if (ajusteValor !== 0) {
                 bodyConsolidacaoResumo.push(
                     [`Ajuste Cond. Pagamento (${condicaoTexto})`, { content: formatarMoeda(ajusteValor), styles: { halign: 'right' } }]
@@ -1198,11 +1312,19 @@
         });
         acrescimoInput.addEventListener('input', atualizarTotais);
         btnLimparFiltros.addEventListener('click', limparFiltrosBloco1);
+        btnSelecionarTodas.addEventListener('click', selecionarTodasEscolas);
 
         // Bloco 2:
-        opexHorasAnuaisInput.addEventListener('input', recalcularOpexEConsolidacao);
-        opexValorHoraDocenteInput.addEventListener('input', recalcularOpexEConsolidacao);
-        opexIncluirMonitorCheck.addEventListener('change', recalcularOpexEConsolidacao);
+        const inputsOpex = [
+            opexModeloAtendimentoSelect, opexBolsaMonitorInput, opexValorHoraProfessorInput,
+            opexCustoAssistenteInput, opexCustoAnalista2Input, opexCustoAnalista3Input
+        ];
+        inputsOpex.forEach(input => {
+            input.addEventListener('input', recalcularOpexEConsolidacao);
+            if (input.tagName === 'SELECT') {
+                input.addEventListener('change', recalcularOpexEConsolidacao);
+            }
+        });
         
         // Bloco 3:
         capexTabelaItensContainer.addEventListener('input', (e) => {
@@ -1224,13 +1346,12 @@
         });
 
         // Bloco 4:
-        bl4IncluirAssistentesCheck.addEventListener('change', recalcularApenasConsolidacao); 
         bl4CondicaoPagamentoSelect.addEventListener('change', recalcularApenasConsolidacao); 
         btnGerarPdfCompleto.addEventListener('click', gerarPDFCompleto);
         btnGerarPdfResumo.addEventListener('click', gerarPDFResumo);
 
         // Bloco 5: 
-        bl5MargemCustoHoraDocenteInput.addEventListener('input', atualizarBloco5);
+        bl5MargemCustoHoraProfessorInput.addEventListener('input', atualizarBloco5);
         bl5MargemCapexPercentInput.addEventListener('input', atualizarBloco5);
 
 
@@ -1243,5 +1364,3 @@
 
 </body>
 </html>
-
-
