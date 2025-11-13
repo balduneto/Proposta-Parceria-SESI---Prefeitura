@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proposta de Parceria SESI - Blocos 1-5</title>
+    <title>Proposta Piloto SESI - 9 Escolas (Blocos 1-5)</title>
     <script src="https://cdn-tailwindcss.vercel.app/"></script>
     <!-- jsPDF Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -105,6 +105,7 @@
         <header class="border-b border-gray-200 pb-4 mb-6 flex items-center justify-between">
             <div>
                 <h1 class="text-1xl font-bold text-gray-700">Proposta de Parceria - Atividades Complementares (Tempo Integral)</h1>
+                <h2 class="text-lg font-semibold text-cyan-700">Versão Piloto - 9 Escolas</h2>
             </div>
             <img src="https://i.postimg.cc/8CXccsTc/sseducacao.png" alt="Logomarca Seduc-GO" class="h-16 w-auto object-contain">
         </header>
@@ -116,12 +117,12 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
-                <h4 class="text-lg font-semibold text-gray-700 mb-4">Seleção de Unidades Educacionais</h4>
+                <h4 class="text-lg font-semibold text-gray-700 mb-4">Seleção de Unidades Educacionais (Piloto 9)</h4>
                 
                 <!-- Filtro e Botão de Limpar -->
                 <div class="flex items-center gap-2 mb-4">
                     <input type="text" id="filtro-escola" placeholder="Buscar escola por nome..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                    <button id="btn-selecionar-todas" class="flex-shrink-0 px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" title="Selecionar Todas as 46 Escolas">
+                    <button id="btn-selecionar-todas" class="flex-shrink-0 px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" title="Selecionar Todas as 9 Escolas">
                         Todas
                     </button>
                     <button id="btn-limpar-filtros" class="flex-shrink-0 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" title="Limpar Seleção">
@@ -317,7 +318,7 @@
                         <tr>
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Incluir</th>
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd. por Escola</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Unitário e Opção</th>
                             <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Total</th>
                         </tr>
@@ -330,7 +331,7 @@
             <!-- Rodapé Explicativo Bloco 3 -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 3:</strong> Este bloco calcula o custo de aquisição (CAPEX). O cálculo multiplica o <strong>Custo Unitário</strong> (seja 100% Aquisição ou % Locação) pela <strong>Quantidade por Escola</strong> e, em seguida, pelo <strong>Total de Escolas</strong> (do Bloco 1), somando todos os itens para obter o custo total.
+                    <strong>Resumo do Bloco 3:</strong> Este bloco calcula o custo de aquisição (CAPEX). O cálculo multiplica o <strong>Custo Unitário</strong> (seja 100% Aquisição ou % Locação) pela <strong>Quantidade</strong> e, em seguida, pela <strong>Base de Cálculo</strong> (Total de Escolas ou Grupos de Escolas), somando todos os itens.
                 </p>
             </div>
         </div>
@@ -485,58 +486,21 @@
 
     <script>
         // --- BANCO DE DADOS DAS ESCOLAS (BLOCO 1) ---
-        // Atualizado com a tabela completa de 46 escolas (image_06c7ff.png)
+        // ATUALIZADO PARA 9 ESCOLAS (PILOTO)
         const dadosEscolas = [
-            { id: 1, nome: "EM ABRAO RASSI", alunos: 329, turmas: 12 },
-            { id: 2, nome: "EM ALONSO DIAS PINHEIRO", alunos: 220, turmas: 8 },
-            { id: 3, nome: "EM ANA DAS NEVES DE FREITAS", alunos: 204, turmas: 9 },
-            { id: 4, nome: "EM BENEDITO SOARES DE CASTRO", alunos: 190, turmas: 7 },
-            { id: 5, nome: "EM DE TEMPO INTEGRAL EUNICE WEAVER", alunos: 218, turmas: 8 },
-            { id: 6, nome: "EM DE TEMPO INTEGRAL JARDIM DAS AROEIRAS", alunos: 212, turmas: 8 },
-            { id: 7, nome: "EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO", alunos: 266, turmas: 12 },
-            { id: 8, nome: "EM DE TEMPO INTEGRAL JUSCELINO KUBITSCHEK", alunos: 169, turmas: 7 },
-            { id: 9, nome: "EM DE TEMPO INTEGRAL PRESIDENTE DUTRA", alunos: 230, turmas: 8 },
-            { id: 10, nome: "EM DE TEMPO INTEGRAL RUI RODRIGUES", alunos: 127, turmas: 6 },
-            { id: 11, nome: "EM DE TEMPO INTEGRAL SETOR GRAJAU", alunos: 344, turmas: 12 },
-            { id: 12, nome: "EM DONA BELINHA", alunos: 246, turmas: 9 },
-            { id: 13, nome: "EM FRANCISCO BIBIANO DE CARVALHO", alunos: 225, turmas: 8 },
-            { id: 14, nome: "EM FREI DEMETRIO ZANQUETA", alunos: 275, turmas: 10 },
-            { id: 15, nome: "EM FREI NAZARENO CONFALONI", alunos: 323, turmas: 12 },
-            { id: 16, nome: "EM GEORGETA RIVALINO DUARTE", alunos: 195, turmas: 7 },
-            { id: 17, nome: "EM JARBAS JAYME", alunos: 199, turmas: 7 },
-            { id: 18, nome: "EM JOAQUIM CÂMARA FILHO", alunos: 330, turmas: 12 },
-            { id: 19, nome: "EM JOSÉ CARLOS PIMENTA", alunos: 140, turmas: 9 },
-            { id: 20, nome: "EM LIONS CLUBE DE GOIÂNIA TOCANTINS", alunos: 351, turmas: 13 },
-            { id: 21, nome: "EM MARECHAL RIBAS JÚNIOR", alunos: 341, turmas: 14 },
-            { id: 22, nome: "EM MARIA ARAÚJO DE FREITAS", alunos: 360, turmas: 15 },
-            { id: 23, nome: "EM MARIA GENOVEVA", alunos: 134, turmas: 5 },
-            { id: 24, nome: "EM MOISÉS SANTANA", alunos: 166, turmas: 6 },
-            { id: 25, nome: "EM MÔNICA DE CASTRO CARNEIRO", alunos: 281, turmas: 10 },
-            { id: 26, nome: "EM OSTERNO POTENCIANO E SILVA", alunos: 221, turmas: 8 },
-            { id: 27, nome: "EM PAULO TEIXEIRA DE MENDONCA", alunos: 177, turmas: 6 },
-            { id: 28, nome: "EM PROFR MARIA CAMARGO", alunos: 242, turmas: 10 },
-            { id: 29, nome: "EM PROFESSOR LOURENCO FERREIRA CAMPOS", alunos: 300, turmas: 11 },
-            { id: 30, nome: "EM PROFESSORA LOUISINHA", alunos: 348, turmas: 14 },
-            { id: 31, nome: "EM PROFESSORA MARIA NOSIDIA PALMEIRAS DAS NEVES", alunos: 287, turmas: 10 },
-            { id: 32, nome: "EM PROFESSORA SILENE DE ANDRADE", alunos: 170, turmas: 6 },
-            { id: 33, nome: "EM REGINA HELOU", alunos: 278, turmas: 10 },
-            { id: 34, nome: "EM SANTA RITA DE CÁSSIA (VALE DAS POMBAS)", alunos: 103, turmas: 8 },
-            { id: 35, nome: "EM SANTA TEREZINHA", alunos: 130, turmas: 7 },
-            { id: 36, nome: "EM SANTO ANTÔNIO", alunos: 246, turmas: 10 },
-            { id: 37, nome: "EM SEBASTIÃO ARANTES", alunos: 244, turmas: 10 },
-            { id: 38, nome: "EM STEPHÂNIA ALVES BISPO", alunos: 283, turmas: 10 },
-            { id: 39, nome: "EM TARGINO DE AGUIAR", alunos: 193, turmas: 7 },
-            { id: 40, nome: "EM VILA ROSA", alunos: 222, turmas: 8 },
-            { id: 41, nome: "EM ZEVERA ANDREA VECCI", alunos: 344, turmas: 13 },
-            { id: 42, nome: "EMTI PROFESSORA ARLEI GARCIA", alunos: 414, turmas: 16 },
-            { id: 43, nome: "EMTI ROTARY CLUB MDE GOIANIA", alunos: 180, turmas: 8 },
-            { id: 44, nome: "EMTI SANTA MARTA", alunos: 182, turmas: 9 },
-            { id: 45, nome: "ESCOLA JOÃO CRISOSTOMO ROSA", alunos: 135, turmas: 5 },
-            { id: 46, nome: "ESCOLA MUNICIPAL GO-04", alunos: 92, turmas: 5 }
+            { id: 1, nome: "EM Cel José Viana", alunos: 336, turmas: 12 },
+            { id: 2, nome: "EM José Alves Vila Nova", alunos: 336, turmas: 12 },
+            { id: 3, nome: "EM Prof. Trajano de Sá Guimarães", alunos: 420, turmas: 12 },
+            { id: 4, nome: "EM Prof. Amélia Fernandes Martins", alunos: 336, turmas: 12 },
+            { id: 5, nome: "EM Prof. Cleonice Monteiro Wolney", alunos: 188, turmas: 8 },
+            { id: 6, nome: "EM João Clarimundo Oliveira", alunos: 200, turmas: 8 },
+            { id: 7, nome: "EM Grande Retiro", alunos: 336, turmas: 12 },
+            { id: 8, nome: "EM Dom Tomás Balduino", alunos: 336, turmas: 12 },
+            { id: 9, nome: "EM Renascer", alunos: 420, turmas: 14 }
         ];
 
         // --- BANCO DE DADOS CAPEX (BLOCO 3) ---
-        // Valores baseados na tabela image_e63e63a.png
+        // (Mantém os mesmos valores base da proposta principal)
         const dadosCapex = [
             { id: 'c1', produto: "Flauta", qtdPorEscola: 112, vlrAquisicao: 62.00 },
             { id: 'c2', produto: "Teclado", qtdPorEscola: 20, vlrAquisicao: 1200.00 },
@@ -546,7 +510,7 @@
             { id: 'c6', produto: "Bola de Voleibol", qtdPorEscola: 12, vlrAquisicao: 250.00 },
             { id: 'c7', produto: "Mesa (Tênis)", qtdPorEscola: 8, vlrAquisicao: 2500.00 },
             { id: 'c8', produto: "Kimono", qtdPorEscola: 336, vlrAquisicao: 340.00 },
-            { id: 'c9', produto: "Colchonetes", qtdPorEscola: 80, vlrAquisicao: 76.50 },
+            // { id: 'c9', produto: "Colchonetes", qtdPorEscola: 80, vlrAquisicao: 76.50 }, // ITEM EXCLUÍDO
             { id: 'c10', produto: "Raquete/tênis/bola/rede", qtdPorEscola: 8, vlrAquisicao: 250.00 },
             { id: 'c11', produto: "Tatame", qtdPorEscola: 1, vlrAquisicao: 10200.00 },
             { id: 'c12', produto: "Maleta Robótica I", qtdPorEscola: 8, vlrAquisicao: 2300.00 },
@@ -555,9 +519,10 @@
             { id: 'c15', produto: "Carrinho de Notebook", qtdPorEscola: 2, vlrAquisicao: 8000.00 },
             { id: 'c16', produto: "Notebook", qtdPorEscola: 73, vlrAquisicao: 6200.00 },
             { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrAquisicao: 2000.00 },
-            { id: 'c18', produto: "Kit Artes Circenses", qtdPorEscola: 1, vlrAquisicao: 24800.00 },
+            // ITENS COM LÓGICA DE CÁLCULO ALTERADA
+            { id: 'c18', produto: "Kit Artes Circenses", qtdPorEscola: 1, vlrAquisicao: 52800.00, tipoCalculo: 'porGrupoEscola', grupo: 3 },
             { id: 'c19', produto: "Kit Robótica", qtdPorEscola: 1, vlrAquisicao: 39920.00 },
-            { id: 'c20', produto: "Kit Dança Rítmica", qtdPorEscola: 1, vlrAquisicao: 41600.00 }
+            { id: 'c20', produto: "Kit Dança Rítmica", qtdPorEscola: 1, vlrAquisicao: 62400.00, tipoCalculo: 'porGrupoEscola', grupo: 3 }
         ];
 
         // --- REFERÊNCIAS DO DOM - BLOCO 1 ---
@@ -583,11 +548,9 @@
         const opexCustoAssistenteInput = document.getElementById('opex-custo-assistente');
         const opexCustoAnalista2Input = document.getElementById('opex-custo-analista2');
         const opexCustoAnalista3Input = document.getElementById('opex-custo-analista3');
-        // NOVAS REFERÊNCIAS
         const opexQtdAssistentesEl = document.getElementById('opex-qtd-assistentes');
         const opexQtdAnalistas2El = document.getElementById('opex-qtd-analistas2');
         const opexQtdAnalistas3El = document.getElementById('opex-qtd-analistas3');
-        // FIM DAS NOVAS REFERÊNCIAS
         const opexCustoMonitoresEl = document.getElementById('opex-custo-monitores');
         const opexCustoProfessoresEl = document.getElementById('opex-custo-professores');
         const opexCustoEquipeEl = document.getElementById('opex-custo-equipe');
@@ -602,8 +565,6 @@
         // --- REFERÊNCIAS DO DOM - BLOCO 4 ---
         const totalOpexConsolidadoEl = document.getElementById('total-opex-consolidado');
         const totalCapexConsolidadoEl = document.getElementById('total-capex-consolidado');
-        // const bl4IncluirAssistentesCheck = document.getElementById('bl4-incluir-assistentes'); // REMOVIDO
-        // const bl4CustoAssistentesEl = document.getElementById('bl4-custo-assistentes'); // REMOVIDO
         const bl4CondicaoPagamentoSelect = document.getElementById('bl4-condicao-pagamento'); 
         const bl4AjustePagamentoDisplayEl = document.getElementById('bl4-ajuste-pagamento-display'); 
         const totalGeralPropostaEl = document.getElementById('total-geral-proposta');
@@ -678,6 +639,7 @@
             dadosCapex.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = 'capex-item-row';
+                tr.dataset.id = item.id; // Adicionado ID para a lógica de cálculo
                 
                 const vlrBaseAquisicao = parseFloat(item.vlrAquisicao);
 
@@ -688,6 +650,12 @@
                     textoLocacao = 'Locação (50%):';
                 }
                 const vlrBaseLocacao = vlrBaseAquisicao * percentualLocacao;
+                
+                // Lógica da unidade de cálculo (nova)
+                let unidadeLabel = '(por escola)';
+                if (item.tipoCalculo === 'porGrupoEscola') {
+                    unidadeLabel = `(por ${item.grupo} escolas)`;
+                }
 
                 tr.innerHTML = `
                     <td class="px-3 py-3 whitespace-nowrap align-top">
@@ -698,6 +666,10 @@
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap align-top">
                         <input type="number" min="0" value="${item.qtdPorEscola}" class="capex-qtd-escola table-input">
+                        <!-- Lógica de unidade de cálculo (nova) -->
+                        <span class="text-xs text-gray-500 ml-1">
+                           ${unidadeLabel}
+                        </span>
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap align-top">
                         <fieldset>
@@ -770,7 +742,7 @@
         }
         
         // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 3 (CAPEX) ---
-        function atualizarCapex(totalEscolas) {
+        function atualizarCapex(totalEscolas, totalTurmas) {
             capexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
             let totalCapexGeral = 0;
             const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
@@ -782,7 +754,7 @@
                 const custoTotalSpan = row.querySelector('.capex-custo-total');
                 const valorBaseInput = row.querySelector('.capex-valor-base-input');
                 const valorBase = parseFloat(valorBaseInput.value) || 0;
-                const qtdPorEscola = parseFloat(qtdPorEscolaInput.value) || 0;
+                const qtd = parseFloat(qtdPorEscolaInput.value) || 0; // Renomeado de qtdPorEscola
                 let valorUnitarioEscolhido = 0;
 
                 if (radioSelecionado.value === 'aquisicao') {
@@ -792,7 +764,21 @@
                     valorUnitarioEscolhido = valorBase * percentual;
                 }
                 
-                const custoTotalItem = qtdPorEscola * valorUnitarioEscolhido * totalEscolas;
+                // --- LÓGICA DE CÁLCULO ATUALIZADA ---
+                const itemId = row.dataset.id;
+                const itemConfig = dadosCapex.find(d => d.id === itemId);
+                let custoTotalItem = 0;
+
+                if (itemConfig && itemConfig.tipoCalculo === 'porGrupoEscola') {
+                    // Nova Lógica: 1 kit para cada 3 escolas
+                    const numGrupos = Math.ceil(totalEscolas / itemConfig.grupo);
+                    custoTotalItem = qtd * valorUnitarioEscolhido * numGrupos;
+                } else {
+                    // Lógica Padrão: por escola
+                    custoTotalItem = qtd * valorUnitarioEscolhido * totalEscolas;
+                }
+                // --- FIM DA LÓGICA ATUALIZADA ---
+                
                 custoTotalSpan.innerText = formatarMoeda(custoTotalItem);
 
                 if (checkbox.checked) {
@@ -823,7 +809,6 @@
             // Atualiza DOM Bloco 4
             totalOpexConsolidadoEl.innerText = formatarMoeda(totalOpex);
             totalCapexConsolidadoEl.innerText = formatarMoeda(totalCapex);
-            // bl4CustoAssistentesEl.innerText = "+ R$ 0,00"; // Campo removido
             bl4AjustePagamentoDisplayEl.innerText = (ajustePagamentoValor >= 0 ? "+ " : "") + formatarMoeda(ajustePagamentoValor);
             totalGeralPropostaEl.innerText = formatarMoeda(totalGeral);
             
@@ -926,7 +911,7 @@
             const totalOpexNumerico = atualizarOpex(totalEscolas, totalTurmas); 
             
             // Recalcula Bloco 3
-            const totalCapexNumerico = atualizarCapex(totalEscolas);
+            const totalCapexNumerico = atualizarCapex(totalEscolas, totalTurmas); // Passa totalTurmas
 
             // Recalcula Bloco 4 (que agora chama o Bloco 5 internamente)
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
@@ -962,7 +947,7 @@
         // --- FUNÇÃO PARA SELECIONAR TODAS AS ESCOLAS (BLOCO 1) ---
         function selecionarTodasEscolas() {
             filtroEscolaInput.value = ''; // Limpa o filtro
-            renderizarListaEscolas(); // Renderiza todas as 46
+            renderizarListaEscolas(); // Renderiza todas as escolas (neste caso, 9)
             const checkboxes = document.querySelectorAll('#lista-escolas .escola-checkbox');
             checkboxes.forEach(check => {
                 check.checked = true;
@@ -989,7 +974,7 @@
             const turmasStr = totalTurmasEl.innerText.replace(/\./g, '');
             const totalTurmasAtual = parseInt(turmasStr) || 0;
 
-            const totalCapexNumerico = atualizarCapex(totalEscolasAtual);
+            const totalCapexNumerico = atualizarCapex(totalEscolasAtual, totalTurmasAtual); // Passa turmas
             const totalOpexNumerico = parseMoeda(opexTotalAnualEl.innerText); // Pega o valor atual
             atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
         }
@@ -1009,18 +994,23 @@
             
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
-                doc.setFontSize(14);
+                
+                // Cabeçalho alinhado com o HTML
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(40, 40, 40);
+                doc.setTextColor(80, 80, 80);
                 let textY = 18;
                 doc.text("Proposta de Parceria - Atividades Complementares (Tempo Integral)", 15, textY);
+                doc.setFontSize(9);
+                doc.setTextColor(0, 107, 137); // Ciano
+                doc.text("Versão Piloto - 9 Escolas", 15, textY + 5);
                 
                 if (logoImg) {
                     try {
-                        const logoHeight = 12;
+                        const logoHeight = 16;
                         const logoWidth = (logoImg.width / logoImg.height) * logoHeight;
                         const logoX = doc.internal.pageSize.getWidth() - 15 - logoWidth;
-                        const logoY = textY - (logoHeight / 2) - 1;
+                        const logoY = textY - 8;
                         doc.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
                     } catch (e) {
                         console.error("Erro ao adicionar imagem ao PDF: ", e);
@@ -1028,8 +1018,11 @@
                     }
                 }
                 
+                // Linha divisória
                 doc.setLineWidth(0.5);
-                doc.line(15, 28, 195, 28);
+                doc.line(15, 30, 195, 30);
+                
+                // Rodapé
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
                 doc.text(`Gerado em: ${dataGeracao}`, 15, 288);
@@ -1057,7 +1050,7 @@
                     ['Total Escolas', 'Total Alunos (Base)', 'Total Turmas', 'Média Alunos/Turma'],
                     [totalEscolasEl.innerText, totalAlunosBaseEl.innerText, totalTurmasEl.innerText, mediaAlunosEl.innerText]
                 ],
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
+                didDrawPage: (data) => { if (data.pageNumber === 1) addHeaderFooterPDF(doc, dataGeracao); }
             });
             y = doc.autoTable.previous.finalY + 8;
             doc.autoTable({
@@ -1092,7 +1085,7 @@
                 didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
             });
             y = doc.autoTable.previous.finalY + 10;
-            if (y > 200) { doc.addPage(); y = 40; }
+            if (y > 170) { doc.addPage(); y = 40; } // Verificação de espaço para Bloco 2
 
             // --- BLOCO 2: OPEX ---
             doc.setFontSize(14);
@@ -1138,7 +1131,8 @@
             doc.setFont('helvetica', 'normal');
             doc.text(`Base de Cálculo: ${capexTotalEscolasEl.innerText} escola(s) selecionada(s).`, 15, y);
             y += 6;
-            const capexHead = [['Produto', 'Qtd p/ Escola', 'Tipo Custo', 'Vlr. Unitário', 'Custo Total']];
+            // PDF: Cabeçalho da tabela atualizado (6 colunas)
+            const capexHead = [['Produto', 'Qtd.', 'Unidade', 'Tipo Custo', 'Vlr. Unitário', 'Custo Total']];
             const capexBody = [];
             const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
             itemRows.forEach(row => {
@@ -1151,21 +1145,33 @@
                     const valorBase = parseFloat(row.querySelector('.capex-valor-base-input').value) || 0;
                     let tipoCusto = "N/A";
                     let vlrUnitario = 0;
+                    
+                    // PDF: Lógica para buscar a unidade de cálculo
+                    const itemConfig = dadosCapex.find(d => d.produto === produto);
+                    let unidade = 'por escola';
+                    if (itemConfig && itemConfig.tipoCalculo === 'porGrupoEscola') {
+                        unidade = `por ${itemConfig.grupo} escolas`;
+                    }
 
+                    // *** INÍCIO DA CORREÇÃO DO BUG ***
                     if (radioSelecionado.value === 'aquisicao') {
                         tipoCusto = "Aquisição";
                         vlrUnitario = valorBase;
-                    } else {
-                        const percentual = parseFloat(radioSelecionado.dataset.percentual) || 0.30;
-                        tipoCusto = `Locação (${percentual * 100}%)`;
+                    } else { // Locação
+                        const radioLocacao = row.querySelector('input[value="locacao"]');
+                        const percentual = parseFloat(radioLocacao.dataset.percentual) || 0.30;
+                        tipoCusto = `Locação (${(percentual * 100).toFixed(0)}%)`;
                         vlrUnitario = valorBase * percentual;
                     }
+                    // *** FIM DA CORREÇÃO DO BUG ***
                     
-                    capexBody.push([produto, qtd, tipoCusto, formatarMoeda(vlrUnitario), { content: custoTotalLinha, styles: { halign: 'right' } }]);
+                    // PDF: Corpo da tabela atualizado (6 colunas)
+                    capexBody.push([produto, qtd, unidade, tipoCusto, formatarMoeda(vlrUnitario), { content: custoTotalLinha, styles: { halign: 'right' } }]);
                 }
             });
             capexBody.push([
-                { content: 'TOTAL CAPEX (Proposta)', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } },
+                // PDF: Colspan atualizado para 5
+                { content: 'TOTAL CAPEX (Proposta)', colSpan: 5, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } },
                 { content: capexTotalGeralEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
             ]);
             doc.autoTable({
@@ -1214,8 +1220,8 @@
             });
             
             // FIM DO PDF
-            addHeaderFooterPDF(doc, dataGeracao);
-            doc.save('Proposta_Completa_Parceria_SESI_SME.pdf');
+            addHeaderFooterPDF(doc, dataGeracao); // Adiciona cabeçalho/rodapé na última página
+            doc.save('Proposta_Completa_Piloto_9_Escolas_SESI.pdf');
         }
 
         // --- FUNÇÃO PARA GERAR O PDF (Versão Resumo) ---
@@ -1242,7 +1248,7 @@
                     [{content: 'Total Alunos (Final Estimado)', styles: {fontStyle: 'bold'}} , 
                      {content: totalAlunosFinalEl.innerText, styles: {fontStyle: 'bold', halign: 'right'}}]
                 ],
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
+                didDrawPage: (data) => { if (data.pageNumber === 1) addHeaderFooterPDF(doc, dataGeracao); }
             });
             y = doc.autoTable.previous.finalY + 10;
 
@@ -1296,8 +1302,8 @@
             });
            
             // FIM DO PDF
-            addHeaderFooterPDF(doc, dataGeracao);
-            doc.save('Resumo_Proposta_Parceria_SESI_SME.pdf');
+            addHeaderFooterPDF(doc, dataGeracao); // Adiciona cabeçalho/rodapé na última página
+            doc.save('Resumo_Proposta_Piloto_9_Escolas_SESI.pdf');
         }
 
         // --- EVENT LISTENERS ---
