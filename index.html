@@ -3,1408 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proposta Piloto SESI - 46 Escolas (Blocos 1-5)</title>
+    <title>Proposta de Parceria SESI - 46 Escolas</title>
     <script src="https://cdn-tailwindcss.vercel.app/"></script>
     <!-- jsPDF Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- jsPDF AutoTable Plugin (para tabelas detalhadas) -->
+    <!-- jsPDF AutoTable Plugin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .table-input {
-            @apply w-20 text-center p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-cyan-500;
-        }
-        /* Estilo para o Switch (Checkbox) */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 28px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #0891b2; /* Cor Ciano */
-        }
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-        /* Estilo para a Régua de Valor (Lucro) */
-        .regua-valor-lucro {
-            @apply w-full h-10 flex rounded-lg overflow-hidden border border-gray-300;
-        }
-        .regua-custo {
-            @apply bg-gray-500 h-full flex items-center justify-center text-white text-xs font-bold;
-            transition: width 0.5s ease;
-        }
-        .regua-lucro {
-            @apply bg-green-500 h-full flex items-center justify-center text-white text-xs font-bold;
-            transition: width 0.5s ease;
-        }
-        /* Estilo para o Select */
-        .select-input {
-            @apply w-full text-center text-xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white py-2;
-        }
-        /* Input para Bloco 2 */
-        .bl2-input {
-             @apply w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500;
-        }
-        .bl2-select {
-             @apply w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .table-input { @apply w-24 text-center p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-cyan-500; }
+        
+        /* Switch Styles */
+        .switch { position: relative; display: inline-block; width: 40px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #0891b2; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* Régua Styles */
+        .regua-valor-lucro { @apply w-full h-8 flex rounded-full overflow-hidden border border-gray-200 bg-gray-100 mt-2; }
+        .regua-custo { @apply bg-gray-500 h-full flex items-center justify-center text-white text-xs font-bold transition-all duration-500; }
+        .regua-lucro { @apply bg-green-500 h-full flex items-center justify-center text-white text-xs font-bold transition-all duration-500; }
+        
+        .select-input { @apply w-full text-center font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white py-1; }
+        .bl2-input { @apply w-full text-center text-xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500; }
+        .bl2-select { @apply w-full text-center text-xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500 bg-white; }
     </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-10">
+<body class="bg-gray-50 p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-xl">
 
-        <header class="border-b border-gray-200 pb-4 mb-6 flex items-center justify-between">
-            <div>
-                <h1 class="text-1xl font-bold text-gray-700">Proposta de Parceria - Atividades Complementares (Tempo Integral)</h1>
-                <h2 class="text-lg font-semibold text-cyan-700">Versão Piloto - 46 Escolas</h2>
+        <header class="border-b border-gray-200 pb-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src="https://i.postimg.cc/8CXccsTc/sseducacao.png" alt="Logomarca Seduc-GO" class="h-12 md:h-16 w-auto object-contain">
+            <div class="text-center md:text-right">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Proposta de Parceria</h1>
+                <h2 class="text-sm md:text-lg font-semibold text-cyan-700">Atividades Complementares (Tempo Integral)</h2>
             </div>
-            <img src="https://i.postimg.cc/8CXccsTc/sseducacao.png" alt="Logomarca Seduc-GO" class="h-16 w-auto object-contain">
         </header>
 
-        <!-- Bloco 1: Simulador de Público-Alvo (Oficinas) -->
+        <!-- BLOCO 1 -->
         <div class="mb-8">
-            <h3 class="text-2xl font-bold text-gray-800">Bloco 1: Simulador de Público-Alvo (Oficinas)</h3>
+            <h3 class="text-xl font-bold text-gray-800 border-l-4 border-cyan-600 pl-3">Bloco 1: Público-Alvo (46 Escolas)</h3>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
-                <h4 class="text-lg font-semibold text-gray-700 mb-4">Seleção de Unidades Educacionais (Piloto 46)</h4>
-                
-                <!-- Filtro e Botão de Limpar -->
-                <div class="flex items-center gap-2 mb-4">
-                    <input type="text" id="filtro-escola" placeholder="Buscar escola por nome..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                    <button id="btn-selecionar-todas" class="flex-shrink-0 px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" title="Selecionar Todas as 9 Escolas">
-                        Todas
-                    </button>
-                    <button id="btn-limpar-filtros" class="flex-shrink-0 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" title="Limpar Seleção">
-                        Limpar
-                    </button>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col h-96">
+                <div class="flex items-center gap-2 mb-2">
+                    <input type="text" id="filtro-escola" placeholder="Buscar escola..." class="w-full px-3 py-2 border rounded text-sm focus:ring-2 focus:ring-cyan-500 outline-none">
+                    <button id="btn-selecionar-todas" class="px-3 py-2 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Todas</button>
+                    <button id="btn-limpar-filtros" class="px-3 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">Limpar</button>
                 </div>
-
-                <div id="lista-escolas" class="max-h-96 overflow-y-auto custom-scrollbar pr-2 space-y-3">
-                </div>
+                <div id="lista-escolas" class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2"></div>
             </div>
 
-            <div class="space-y-6">
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Total Escolas</span>
-                        <span id="total-escolas" class="text-3xl font-bold text-cyan-700">0</span>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white border p-3 rounded text-center shadow-sm">
+                        <span class="text-xs text-gray-500 block">Total Escolas</span>
+                        <span id="total-escolas" class="text-2xl font-bold text-cyan-700">0</span>
                     </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Total Alunos (Base)</span>
-                        <span id="total-alunos-base" class="text-3xl font-bold text-cyan-700">0</span>
+                    <div class="bg-white border p-3 rounded text-center shadow-sm">
+                        <span class="text-xs text-gray-500 block">Total Alunos (Base)</span>
+                        <span id="total-alunos-base" class="text-2xl font-bold text-cyan-700">0</span>
                     </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Total Turmas</span>
-                        <span id="total-turmas" class="text-3xl font-bold text-cyan-700">0</span>
+                    <div class="bg-white border p-3 rounded text-center shadow-sm">
+                        <span class="text-xs text-gray-500 block">Total Turmas</span>
+                        <span id="total-turmas" class="text-2xl font-bold text-cyan-700">0</span>
                     </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Média Alunos/Turma</span>
-                        <span id="media-alunos" class="text-3xl font-bold text-cyan-700">0.0</span>
-                    </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center col-span-2 md:col-span-1">
-                        <label for="acrescimo-percent" class="text-sm font-medium text-gray-500 block mb-1">Acréscimo Especiais (%)</label>
-                        <input type="number" id="acrescimo-percent" value="0" min="0" class="w-full text-center text-3xl font-bold text-cyan-700 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                        <p class="text-xs text-gray-400 mt-1">Ref. alunos inclusão</p>
-                    </div>
-                    <div class="bg-cyan-600 text-white rounded-lg p-4 shadow-lg text-center col-span-2 md:col-span-1">
-                        <span class="text-sm font-medium block">Total Alunos (Final)</span>
-                        <span id="total-alunos-final" class="text-3xl font-bold">0</span>
+                    <div class="bg-cyan-50 border p-3 rounded text-center shadow-sm">
+                        <span class="text-xs text-gray-500 block">Acréscimo Especiais (%)</span>
+                        <input type="number" id="acrescimo-percent" value="0" class="w-16 text-center font-bold bg-transparent border-b border-gray-400 focus:outline-none">
                     </div>
                 </div>
-
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <h4 class="text-lg font-semibold text-gray-700 mb-3">Análise e Pontos Fortes da Proposta (Bloco 1)</h4>
-                    <div id="analise-proposta" class="text-gray-600 space-y-2 text-sm md:text-base">
-                        <p>Selecione uma ou mais escolas para gerar a análise de público-alvo e o potencial de impacto da parceria.</p>
-                    </div>
+                <div class="bg-cyan-600 text-white p-4 rounded shadow text-center">
+                    <span class="text-sm block opacity-80">Total Alunos (Final Estimado)</span>
+                    <span id="total-alunos-final" class="text-3xl font-bold">0</span>
                 </div>
+                <div id="analise-proposta" class="text-sm text-gray-600 bg-gray-50 p-3 rounded border"></div>
             </div>
         </div>
 
-        <!-- Rodapé Explicativo Bloco 1 -->
-        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p class="text-sm text-gray-600">
-                <strong>Resumo do Bloco 1:</strong> Este bloco define o escopo da parceria. Ao selecionar as escolas, definimos o público-alvo (total de alunos, turmas e escolas) que servirá como base de cálculo para todos os custos nos blocos seguintes.
-            </p>
-        </div>
-        
-        <!-- Bloco 2: Cálculo de Custos Operacionais (OPEX) - NOVO MODELO -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <div class="mb-8">
-                <h3 class="text-2xl font-bold text-gray-800">Bloco 2: Cálculo de Custos Operacionais (OPEX)</h3>
-                <p class="text-gray-600">Cálculo de custos de equipe com base no total de turmas e modelo de atendimento.</p>
-            </div>
-
-            <!-- Linha 1: Base de Cálculo -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total Escolas (Base)</span>
-                    <span id="opex-total-escolas" class="text-4xl font-bold text-cyan-700">0</span>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total Turmas (Base)</span>
-                    <span id="opex-total-turmas" class="text-4xl font-bold text-cyan-700">0</span>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Período (Meses)</span>
-                    <span id="opex-periodo-meses" class="text-4xl font-bold text-cyan-700">9</span>
-                </div>
-            </div>
-
-            <!-- Linha 2: Inputs de Custo (Profissionais) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-modelo-atendimento" class="text-sm font-medium text-gray-500 block mb-2 text-center">Modelo de Atendimento</label>
-                    <select id="opex-modelo-atendimento" class="bl2-select">
+        <!-- BLOCO 2 -->
+        <div class="mb-8 border-t pt-6">
+            <h3 class="text-xl font-bold text-gray-800 border-l-4 border-cyan-600 pl-3 mb-4">Bloco 2: Custos Operacionais (OPEX)</h3>
+            
+            <!-- Parâmetros Base -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="bg-white p-4 rounded border shadow-sm">
+                    <label class="text-xs text-gray-500 block text-center">Modelo de Atendimento</label>
+                    <select id="opex-modelo-atendimento" class="bl2-select text-sm">
                         <option value="288">2 dias/sem (288h)</option>
                         <option value="432">3 dias/sem (432h)</option>
                     </select>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-bolsa-monitor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Bolsa Monitor/mês (1/turma)</label>
-                    <input type="number" id="opex-bolsa-monitor" value="1500.00" min="0" step="0.01" class="bl2-input">
+                <div class="bg-white p-4 rounded border shadow-sm text-center">
+                    <span class="text-xs text-gray-500 block">Turmas (Base de Cálculo)</span>
+                    <span id="opex-total-turmas" class="text-xl font-bold text-cyan-700">0</span>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-valor-hora-professor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Valor Hora Professor (1/turma)</label>
-                    <input type="number" id="opex-valor-hora-professor" value="220.00" min="0" step="0.01" class="bl2-input">
-                </div>
-            </div>
-
-            <!-- Linha 3: Inputs de Custo (Equipe Técnica) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-custo-assistente" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Assistente/mês (1/5 escolas)</label>
-                    <input type="number" id="opex-custo-assistente" value="5000.00" min="0" step="0.01" class="bl2-input">
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-custo-analista2" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Analista II/mês (1/5 escolas)</label>
-                    <input type="number" id="opex-custo-analista2" value="7000.00" min="0" step="0.01" class="bl2-input">
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <label for="opex-custo-analista3" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Analista III/mês (2 fixos)</label>
-                    <input type="number" id="opex-custo-analista3" value="9600.00" min="0" step="0.01" class="bl2-input">
-                </div>
-            </div>
-            
-            <!-- NOVA LINHA 3.5: Quantidades da Equipe Técnica (Calculado) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Qtd. Assistentes (Calc.)</span>
-                    <span id="opex-qtd-assistentes" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">(1 para cada 5 escolas)</p>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Qtd. Analistas II (Calc.)</span>
-                    <span id="opex-qtd-analistas2" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">(1 para cada 5 escolas)</p>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Qtd. Analistas III (Calc.)</span>
-                    <span id="opex-qtd-analistas3" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">(2 fixos para o projeto)</p>
+                <div class="bg-white p-4 rounded border shadow-sm text-center">
+                    <span class="text-xs text-gray-500 block">Período (Meses)</span>
+                    <span id="opex-periodo-meses" class="text-xl font-bold text-cyan-700">9</span>
                 </div>
             </div>
 
-            <!-- Linha 4: Resumo de Custos (Calculado) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Custo Total Monitores (9 meses)</span>
-                    <span id="opex-custo-monitores" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2">(Turmas x Bolsa x 9)</p>
+            <!-- Custos Unitários -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4 text-center">
+                <div class="bg-gray-50 p-2 rounded border">
+                    <label class="text-[10px] text-gray-500 block">Bolsa Monitor</label>
+                    <input type="number" id="opex-bolsa-monitor" value="1500" class="w-full bg-transparent text-center font-semibold text-sm outline-none">
                 </div>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Custo Total Professores (Anual)</span>
-                    <span id="opex-custo-professores" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2">(Turmas x Horas x Valor Hora)</p>
+                <div class="bg-gray-50 p-2 rounded border">
+                    <label class="text-[10px] text-gray-500 block">Hora Professor</label>
+                    <input type="number" id="opex-valor-hora-professor" value="220" class="w-full bg-transparent text-center font-semibold text-sm outline-none">
                 </div>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Custo Equipe Técnica (9 meses)</span>
-                    <span id="opex-custo-equipe" class="text-3xl font-bold text-gray-800">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2">(Assist + An.II + An.III) x 9</p>
+                <div class="bg-gray-50 p-2 rounded border">
+                    <label class="text-[10px] text-gray-500 block">Salário Assistente</label>
+                    <input type="number" id="opex-custo-assistente" value="5000" class="w-full bg-transparent text-center font-semibold text-sm outline-none">
+                </div>
+                <div class="bg-gray-50 p-2 rounded border">
+                    <label class="text-[10px] text-gray-500 block">Salário Analista II</label>
+                    <input type="number" id="opex-custo-analista2" value="7000" class="w-full bg-transparent text-center font-semibold text-sm outline-none">
+                </div>
+                <div class="bg-gray-50 p-2 rounded border">
+                    <label class="text-[10px] text-gray-500 block">Salário Analista III</label>
+                    <input type="number" id="opex-custo-analista3" value="9600" class="w-full bg-transparent text-center font-semibold text-sm outline-none">
                 </div>
             </div>
 
-            <!-- Linha 5: Total OPEX (Resultado) -->
-            <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center flex flex-col justify-center">
-                <span class="text-lg font-medium block">Total OPEX (Anual)</span>
-                <span id="opex-total-anual" class="text-4xl font-bold my-2">R$ 0,00</span>
-                <p class="text-xs text-cyan-100 mt-2">Cálculo: (Custo Monitores) + (Custo Professores) + (Custo Equipe Técnica)</p>
-            </div>
-
-
-            <!-- Rodapé Explicativo Bloco 2 -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 2:</strong> Este bloco calcula o custo operacional (OPEX). O cálculo soma os custos de <strong>Monitores</strong> (baseado em turmas e bolsa mensal por 9 meses), <strong>Professores</strong> (baseado em turmas, horas do modelo e valor/hora) e <strong>Equipe Técnica</strong> (baseado em salários mensais por 9 meses).
-                </p>
+            <!-- Totais OPEX -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-3 rounded border text-center">
+                    <span class="text-xs text-gray-400 block">Monitores</span>
+                    <span id="opex-custo-monitores" class="font-bold text-gray-700">R$ 0,00</span>
+                </div>
+                <div class="bg-white p-3 rounded border text-center">
+                    <span class="text-xs text-gray-400 block">Professores</span>
+                    <span id="opex-custo-professores" class="font-bold text-gray-700">R$ 0,00</span>
+                </div>
+                <div class="bg-white p-3 rounded border text-center">
+                    <span class="text-xs text-gray-400 block">Equipe Técnica</span>
+                    <span id="opex-custo-equipe" class="font-bold text-gray-700">R$ 0,00</span>
+                    <div class="text-[10px] text-gray-400 mt-1">
+                        (<span id="opex-qtd-assistentes">0</span> Assis, <span id="opex-qtd-analistas2">0</span> An.II, <span id="opex-qtd-analistas3">0</span> An.III)
+                    </div>
+                </div>
+                <div class="bg-cyan-600 text-white p-3 rounded text-center flex flex-col justify-center">
+                    <span class="text-xs opacity-75 block">Total OPEX (Anual)</span>
+                    <span id="opex-total-anual" class="text-xl font-bold">R$ 0,00</span>
+                </div>
             </div>
         </div>
-        
-        <!-- Bloco 3: Custos de Aquisição (CAPEX) -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <div class="mb-8">
-                <h3 class="text-2xl font-bold text-gray-800">Bloco 3: Custos de Aquisição (CAPEX)</h3>
-                <p class="text-gray-600">Seleção e cálculo de kits e itens de aquisição por escola.</p>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total Escolas Selecionadas</span>
-                    <span id="capex-total-escolas" class="text-4xl font-bold text-cyan-700">0</span>
-                    <p class="text-xs text-gray-400 mt-2">Base de cálculo para o CAPEX.</p>
-                </div>
-                
-                <div class="bg-cyan-600 text-white rounded-lg p-6 shadow-lg text-center md:col-span-2 flex flex-col justify-center">
-                    <span class="text-lg font-medium block">Total CAPEX (Proposta)</span>
-                    <span id="capex-total-geral" class="text-4xl font-bold my-2">R$ 0,00</span>
-                    <p class="text-xs text-cyan-100 mt-2">Soma de todos os itens selecionados multiplicados pelas escolas.</p>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto w-full">
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Incluir</th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Unitário e Opção</th>
-                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Custo Total</th>
+        <!-- BLOCO 3 -->
+        <div class="mb-8 border-t pt-6">
+            <h3 class="text-xl font-bold text-gray-800 border-l-4 border-cyan-600 pl-3 mb-4">Bloco 3: Custos de Aquisição (CAPEX)</h3>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
+                            <th class="py-3 px-4 text-left">Item</th>
+                            <th class="py-3 px-4 text-center">Qtd.</th>
+                            <th class="py-3 px-4 text-left">Custo Unitário Base</th>
+                            <th class="py-3 px-4 text-left">Opção de Custo</th>
+                            <th class="py-3 px-4 text-right">Total</th>
                         </tr>
                     </thead>
-                    <tbody id="capex-tabela-itens" class="divide-y divide-gray-200">
+                    <tbody id="capex-tabela-itens" class="text-gray-700 text-sm">
+                        <!-- JS preenche -->
                     </tbody>
                 </table>
             </div>
-
-            <!-- Rodapé Explicativo Bloco 3 -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 3:</strong> Este bloco calcula o custo de aquisição (CAPEX). O cálculo multiplica o <strong>Custo Unitário</strong> (seja 100% Aquisição ou % Locação) pela <strong>Quantidade</strong> e, em seguida, pela <strong>Base de Cálculo</strong> (Total de Escolas ou Grupos de Escolas), somando todos os itens.
-                </p>
+            <div class="mt-4 text-right">
+                 <div class="inline-block bg-cyan-600 text-white p-3 rounded shadow">
+                    <span class="text-xs opacity-75 block">Total CAPEX</span>
+                    <span id="capex-total-geral" class="text-2xl font-bold">R$ 0,00</span>
+                </div>
             </div>
         </div>
-        
-        <!-- Bloco 4: Consolidação da Proposta -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <div class="mb-8">
-                <h3 class="text-2xl font-bold text-gray-800">Bloco 4: Consolidação da Proposta (SESI)</h3>
-                <p class="text-gray-600">Resumo financeiro total da parceria com base nas seleções anteriores.</p>
-            </div>
 
+        <!-- BLOCO 4 -->
+        <div class="mb-8 border-t pt-6 bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-xl font-bold text-gray-800 border-l-4 border-cyan-600 pl-3 mb-4">Bloco 4: Consolidação</h3>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <!-- Card 1: Total OPEX -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total OPEX (Anual)</span>
-                    <span id="total-opex-consolidado" class="text-3xl font-bold text-cyan-700">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2">Custo operacional das oficinas.</p>
-                </div>
-
-                <!-- Card 2: Total CAPEX -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm text-center">
-                    <span class="text-sm font-medium text-gray-500 block">Total CAPEX (Proposta)</span>
-                    <span id="total-capex-consolidado" class="text-3xl font-bold text-cyan-700">R$ 0,00</span>
-                    <p class="text-xs text-gray-400 mt-2">Custo de aquisição de itens.</p>
-                </div>
-
-                <!-- Card 3: Condição de Pagamento -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm col-span-1 md:col-span-2">
-                    <label for="bl4-condicao-pagamento" class="text-sm font-medium text-gray-500 block mb-2 text-center">Condição de Pagamento (Proposta)</label>
+                <div>
+                    <label class="text-xs text-gray-500 block mb-1">Condição de Pagamento</label>
                     <select id="bl4-condicao-pagamento" class="select-input">
-                        <option value="mensal">Mensal (+3% Acréscimo)</option>
-                        <option value="anual" selected>Anual (Valor Base)</option>
-                        <option value="semestral">Semestral (-2% Desconto)</option>
-                        <option value="avista">À Vista (-5% Desconto)</option>
+                        <option value="mensal">Mensal (+3%)</option>
+                        <option value="anual" selected>Anual (Base)</option>
+                        <option value="semestral">Semestral (-2%)</option>
+                        <option value="avista">À Vista (-5%)</option>
                     </select>
-                    <span id="bl4-ajuste-pagamento-display" class="text-xl font-bold text-gray-800 block text-center mt-2">+ R$ 0,00</span>
+                    <span id="bl4-ajuste-pagamento-display" class="block text-center text-sm font-bold text-gray-500 mt-1">R$ 0,00</span>
+                </div>
+                <div class="flex flex-col justify-center items-end">
+                    <div class="text-sm text-gray-600">OPEX: <span id="total-opex-consolidado" class="font-bold">R$ 0,00</span></div>
+                    <div class="text-sm text-gray-600">CAPEX: <span id="total-capex-consolidado" class="font-bold">R$ 0,00</span></div>
                 </div>
             </div>
 
-            <!-- Card 4: Total Geral (Movido para baixo) -->
-            <div class="bg-cyan-800 text-white rounded-lg p-6 shadow-xl text-center flex flex-col justify-center">
-                <span class="text-lg font-semibold block">Valor Total da Proposta (Cliente)</span>
-                <span id="total-geral-proposta" class="text-4xl font-bold my-2">R$ 0,00</span>
-                <p class="text-xs text-cyan-100 mt-2">Soma (OPEX + CAPEX + Ajuste Pagamento)</p>
-            </div>
-
-
-            <!-- Rodapé Explicativo Bloco 4 -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <p class="text-sm text-gray-600">
-                    <strong>Resumo do Bloco 4:</strong> Este bloco final consolida a proposta. Ele soma o <strong>Total OPEX</strong> (Bloco 2) com o <strong>Total CAPEX</strong> (Bloco 3) e aplica o <strong>Ajuste de Pagamento</strong> (desconto ou acréscimo) para apresentar o <strong>Valor Total da Proposta</strong>.
-                </p>
+            <div class="bg-cyan-800 text-white p-6 rounded-xl text-center shadow-lg">
+                <span class="block text-sm opacity-80 uppercase tracking-wide">Valor Total da Proposta</span>
+                <span id="total-geral-proposta" class="block text-4xl md:text-5xl font-bold my-2">R$ 0,00</span>
             </div>
         </div>
 
-        <!-- Bloco 5: Análise de Margem de Lucratividade (Uso Interno) -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <div class="mb-8">
-                <h3 class="text-2xl font-bold text-red-700">Bloco 5: Análise de Margem de Lucratividade (Uso Interno)</h3>
-                <p class="text-gray-600">Painel de simulação da margem de lucro com base nos custos reais vs. preço da proposta.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Coluna da Esquerda: Parâmetros de Custo Real -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-6">
-                    <h4 class="text-lg font-semibold text-gray-700">Parâmetros de Custo Real (Interno)</h4>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <label for="bl5-margem-custo-hora-professor" class="text-sm font-medium text-gray-500 block mb-2 text-center">Custo Hora / Professor (Real)</label>
-                        <input type="number" id="bl5-margem-custo-hora-professor" value="150.00" min="0" step="0.01" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                        <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: R$ 150,00).</p>
-                    </div>
-
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <label for="bl5-margem-capex-percent" class="text-sm font-medium text-gray-500 block mb-2 text-center">Margem CAPEX Inclusa (%)</LAbel>
-                        <input type="number" id="bl5-margem-capex-percent" value="20" min="0" class="w-full text-center text-3xl font-bold text-gray-800 border-b-2 border-gray-300 focus:outline-none focus:border-cyan-500">
-                        <p class="text-xs text-gray-400 mt-2 text-center">Valor editável (padrão: 20%).</p>
-                    </div>
-
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                        <span class="text-sm font-medium text-gray-500 block">Custo OPEX (Monitores + Eq. Técnica)</span>
-                        <span id="bl5-margem-custo-opex-fixo" class="text-2xl font-bold text-gray-800">R$ 0,00</span>
-                        <p class="text-xs text-gray-400 mt-1">(Custo real espelhado do Bloco 2)</p>
-                    </div>
+        <!-- BLOCO 5 (Interno) -->
+        <div class="mb-8 border-t pt-6 border-red-200 bg-red-50 p-4 rounded-lg">
+            <h3 class="text-lg font-bold text-red-800 mb-2">Painel de Margem (Interno)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <label class="block text-red-700 text-xs">Custo Hora Prof. (Real)</label>
+                    <input type="number" id="bl5-margem-custo-hora-professor" value="150" class="w-full p-1 border rounded bg-white">
                 </div>
-
-                <!-- Coluna da Direita: Análise de Lucratividade -->
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-cyan-800 text-white rounded-lg p-4 shadow-lg text-center">
-                            <span class="text-sm font-medium block">Valor Proposta (Cliente)</span>
-                            <span id="bl5-margem-proposta-cliente" class="text-3xl font-bold">R$ 0,00</span>
-                        </div>
-                        <div class="bg-gray-700 text-white rounded-lg p-4 shadow-lg text-center">
-                            <span class="text-sm font-medium block">Custo Total Real (SESI)</span>
-                            <span id="bl5-margem-custo-real-sesi" class="text-3xl font-bold">R$ 0,00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-green-600 text-white rounded-lg p-6 shadow-xl text-center">
-                        <span class="text-lg font-semibold block">Lucro Bruto (Margem)</span>
-                        <span id="bl5-margem-lucro-bruto" class="text-4xl font-bold my-1">R$ 0,00</span>
-                        <p class="text-xs text-green-100 mt-1">(Diferença entre Proposta e Custo Real)</p>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-700 mb-3 text-center">Régua Interativa de Margem</h4>
-                        <p class="text-sm text-gray-500 text-center mb-4">Valor Total da Proposta (100%)</p>
-                        <div class="regua-valor-lucro">
-                            <div id="bl5-margem-regua-custo" class="regua-custo" style="width: 0%;">
-                                <span id="bl5-margem-regua-custo-percent"></span>
-                            </div>
-                            <div id="bl5-margem-regua-lucro" class="regua-lucro" style="width: 0%;">
-                                <span id="bl5-margem-regua-lucro-percent"></span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-2 text-xs">
-                            <span class="font-semibold text-gray-600">■ Custo Real</span>
-                            <span class="font-semibold text-green-600">■ Lucro Bruto</span>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-red-700 text-xs">Margem CAPEX (%)</label>
+                    <input type="number" id="bl5-margem-capex-percent" value="20" class="w-full p-1 border rounded bg-white">
+                </div>
+                <div class="text-center pt-4">
+                    <span class="block text-xs text-red-700">Lucro Bruto Estimado</span>
+                    <span id="bl5-margem-lucro-bruto" class="font-bold text-red-900 text-lg">R$ 0,00</span>
                 </div>
             </div>
-
-            <!-- Rodapé Explicativo Bloco 5 -->
-            <div class="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
-                <p class="text-sm text-red-700">
-                    <strong>Resumo do Bloco 5:</strong> Este bloco é uma ferramenta interna de negociação. Ele compara o <strong>Valor Total da Proposta</strong> (Bloco 4) com o <strong>Custo Real (SESI)</strong>, calculado a partir dos parâmetros de custo editáveis (Custo Hora Professor Real, Margem CAPEX), revelando o <strong>Lucro Bruto</strong> da operação.
-                </p>
+            <div class="regua-valor-lucro">
+                <div id="bl5-margem-regua-custo" class="regua-custo" style="width: 0%;"></div>
+                <div id="bl5-margem-regua-lucro" class="regua-lucro" style="width: 0%;"></div>
+            </div>
+             <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+                <span>Custo</span>
+                <span>Lucro</span>
             </div>
         </div>
 
-        <!-- Botões de Geração de PDF -->
-        <div class="mt-12 pt-8 border-t border-gray-200 text-center flex flex-col md:flex-row items-center justify-center gap-4">
-            <!-- Botão Completo -->
-            <button id="btn-gerar-pdf-completo" class="bg-gray-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all duration-200 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H8a1 1 0 100 2h1v2a1 1 0 102 0v-2h1a1 1 0 100-2h-1V8z" clip-rule="evenodd" />
-                </svg>
-                Gerar PDF Completo
-            </button>
-            <!-- Botão Resumo -->
-            <button id="btn-gerar-pdf-resumo" class="bg-white text-gray-700 font-medium py-3 px-6 rounded-lg shadow-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 transition-all duration-200 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                </svg>
-                Gerar Resumo PDF
-            </button>
+        <div class="text-center space-x-4 pb-10">
+            <button id="btn-gerar-pdf-completo" class="bg-gray-800 hover:bg-gray-900 text-white py-3 px-6 rounded shadow font-medium">PDF Completo</button>
+            <button id="btn-gerar-pdf-resumo" class="bg-white hover:bg-gray-100 text-gray-800 border border-gray-400 py-3 px-6 rounded shadow font-medium">PDF Resumo</button>
         </div>
+
     </div>
 
-    <script>
-        // --- BANCO DE DADOS DAS ESCOLAS (BLOCO 1) ---
-        // Atualizado com a tabela completa de 46 escolas (image_06c7ff.png)
-        const dadosEscolas = [
-            { id: 1, nome: "EM ABRAO RASSI", alunos: 329, turmas: 12 },
-            { id: 2, nome: "EM ALONSO DIAS PINHEIRO", alunos: 220, turmas: 8 },
-            { id: 3, nome: "EM ANA DAS NEVES DE FREITAS", alunos: 204, turmas: 9 },
-            { id: 4, nome: "EM BENEDITO SOARES DE CASTRO", alunos: 190, turmas: 7 },
-            { id: 5, nome: "EM DE TEMPO INTEGRAL EUNICE WEAVER", alunos: 218, turmas: 8 },
-            { id: 6, nome: "EM DE TEMPO INTEGRAL JARDIM DAS AROEIRAS", alunos: 212, turmas: 8 },
-            { id: 7, nome: "EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO", alunos: 266, turmas: 12 },
-            { id: 8, nome: "EM DE TEMPO INTEGRAL JUSCELINO KUBITSCHEK", alunos: 169, turmas: 7 },
-            { id: 9, nome: "EM DE TEMPO INTEGRAL PRESIDENTE DUTRA", alunos: 230, turmas: 8 },
-            { id: 10, nome: "EM DE TEMPO INTEGRAL RUI RODRIGUES", alunos: 127, turmas: 6 },
-            { id: 11, nome: "EM DE TEMPO INTEGRAL SETOR GRAJAU", alunos: 344, turmas: 12 },
-            { id: 12, nome: "EM DONA BELINHA", alunos: 246, turmas: 9 },
-            { id: 13, nome: "EM FRANCISCO BIBIANO DE CARVALHO", alunos: 225, turmas: 8 },
-            { id: 14, nome: "EM FREI DEMETRIO ZANQUETA", alunos: 275, turmas: 10 },
-            { id: 15, nome: "EM FREI NAZARENO CONFALONI", alunos: 323, turmas: 12 },
-            { id: 16, nome: "EM GEORGETA RIVALINO DUARTE", alunos: 195, turmas: 7 },
-            { id: 17, nome: "EM JARBAS JAYME", alunos: 199, turmas: 7 },
-            { id: 18, nome: "EM JOAQUIM CÂMARA FILHO", alunos: 330, turmas: 12 },
-            { id: 19, nome: "EM JOSÉ CARLOS PIMENTA", alunos: 140, turmas: 9 },
-            { id: 20, nome: "EM LIONS CLUBE DE GOIÂNIA TOCANTINS", alunos: 351, turmas: 13 },
-            { id: 21, nome: "EM MARECHAL RIBAS JÚNIOR", alunos: 341, turmas: 14 },
-            { id: 22, nome: "EM MARIA ARAÚJO DE FREITAS", alunos: 360, turmas: 15 },
-            { id: 23, nome: "EM MARIA GENOVEVA", alunos: 134, turmas: 5 },
-            { id: 24, nome: "EM MOISÉS SANTANA", alunos: 166, turmas: 6 },
-            { id: 25, nome: "EM MÔNICA DE CASTRO CARNEIRO", alunos: 281, turmas: 10 },
-            { id: 26, nome: "EM OSTERNO POTENCIANO E SILVA", alunos: 221, turmas: 8 },
-            { id: 27, nome: "EM PAULO TEIXEIRA DE MENDONCA", alunos: 177, turmas: 6 },
-            { id: 28, nome: "EM PROFR MARIA CAMARGO", alunos: 242, turmas: 10 },
-            { id: 29, nome: "EM PROFESSOR LOURENCO FERREIRA CAMPOS", alunos: 300, turmas: 11 },
-            { id: 30, nome: "EM PROFESSORA LOUISINHA", alunos: 348, turmas: 14 },
-            { id: 31, nome: "EM PROFESSORA MARIA NOSIDIA PALMEIRAS DAS NEVES", alunos: 287, turmas: 10 },
-            { id: 32, nome: "EM PROFESSORA SILENE DE ANDRADE", alunos: 170, turmas: 6 },
-            { id: 33, nome: "EM REGINA HELOU", alunos: 278, turmas: 10 },
-            { id: 34, nome: "EM SANTA RITA DE CÁSSIA (VALE DAS POMBAS)", alunos: 103, turmas: 8 },
-            { id: 35, nome: "EM SANTA TEREZINHA", alunos: 130, turmas: 7 },
-            { id: 36, nome: "EM SANTO ANTÔNIO", alunos: 246, turmas: 10 },
-            { id: 37, nome: "EM SEBASTIÃO ARANTES", alunos: 244, turmas: 10 },
-            { id: 38, nome: "EM STEPHÂNIA ALVES BISPO", alunos: 283, turmas: 10 },
-            { id: 39, nome: "EM TARGINO DE AGUIAR", alunos: 193, turmas: 7 },
-            { id: 40, nome: "EM VILA ROSA", alunos: 222, turmas: 8 },
-            { id: 41, nome: "EM ZEVERA ANDREA VECCI", alunos: 344, turmas: 13 },
-            { id: 42, nome: "EMTI PROFESSORA ARLEI GARCIA", alunos: 414, turmas: 16 },
-            { id: 43, nome: "EMTI ROTARY CLUB MDE GOIANIA", alunos: 180, turmas: 8 },
-            { id: 44, nome: "EMTI SANTA MARTA", alunos: 182, turmas: 9 },
-            { id: 45, nome: "ESCOLA JOÃO CRISOSTOMO ROSA", alunos: 135, turmas: 5 },
-            { id: 46, nome: "ESCOLA MUNICIPAL GO-04", alunos: 92, turmas: 5 }
-        ];
+<script>
+    // --- DADOS ---
+    const dadosEscolas = [
+        { id: 1, nome: "EM ABRAO RASSI", alunos: 329, turmas: 12 },
+        { id: 2, nome: "EM ALONSO DIAS PINHEIRO", alunos: 220, turmas: 8 },
+        { id: 3, nome: "EM ANA DAS NEVES DE FREITAS", alunos: 204, turmas: 9 },
+        { id: 4, nome: "EM BENEDITO SOARES DE CASTRO", alunos: 190, turmas: 7 },
+        { id: 5, nome: "EM DE TEMPO INTEGRAL EUNICE WEAVER", alunos: 218, turmas: 8 },
+        { id: 6, nome: "EM DE TEMPO INTEGRAL JARDIM DAS AROEIRAS", alunos: 212, turmas: 8 },
+        { id: 7, nome: "EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO", alunos: 266, turmas: 12 },
+        { id: 8, nome: "EM DE TEMPO INTEGRAL JUSCELINO KUBITSCHEK", alunos: 169, turmas: 7 },
+        { id: 9, nome: "EM DE TEMPO INTEGRAL PRESIDENTE DUTRA", alunos: 230, turmas: 8 },
+        { id: 10, nome: "EM DE TEMPO INTEGRAL RUI RODRIGUES", alunos: 127, turmas: 6 },
+        { id: 11, nome: "EM DE TEMPO INTEGRAL SETOR GRAJAU", alunos: 344, turmas: 12 },
+        { id: 12, nome: "EM DONA BELINHA", alunos: 246, turmas: 9 },
+        { id: 13, nome: "EM FRANCISCO BIBIANO DE CARVALHO", alunos: 225, turmas: 8 },
+        { id: 14, nome: "EM FREI DEMETRIO ZANQUETA", alunos: 275, turmas: 10 },
+        { id: 15, nome: "EM FREI NAZARENO CONFALONI", alunos: 323, turmas: 12 },
+        { id: 16, nome: "EM GEORGETA RIVALINO DUARTE", alunos: 195, turmas: 7 },
+        { id: 17, nome: "EM JARBAS JAYME", alunos: 199, turmas: 7 },
+        { id: 18, nome: "EM JOAQUIM CÂMARA FILHO", alunos: 330, turmas: 12 },
+        { id: 19, nome: "EM JOSÉ CARLOS PIMENTA", alunos: 140, turmas: 9 },
+        { id: 20, nome: "EM LIONS CLUBE DE GOIÂNIA TOCANTINS", alunos: 351, turmas: 13 },
+        { id: 21, nome: "EM MARECHAL RIBAS JÚNIOR", alunos: 341, turmas: 14 },
+        { id: 22, nome: "EM MARIA ARAÚJO DE FREITAS", alunos: 360, turmas: 15 },
+        { id: 23, nome: "EM MARIA GENOVEVA", alunos: 134, turmas: 5 },
+        { id: 24, nome: "EM MOISÉS SANTANA", alunos: 166, turmas: 6 },
+        { id: 25, nome: "EM MÔNICA DE CASTRO CARNEIRO", alunos: 281, turmas: 10 },
+        { id: 26, nome: "EM OSTERNO POTENCIANO E SILVA", alunos: 221, turmas: 8 },
+        { id: 27, nome: "EM PAULO TEIXEIRA DE MENDONCA", alunos: 177, turmas: 6 },
+        { id: 28, nome: "EM PROFR MARIA CAMARGO", alunos: 242, turmas: 10 },
+        { id: 29, nome: "EM PROFESSOR LOURENCO FERREIRA CAMPOS", alunos: 300, turmas: 11 },
+        { id: 30, nome: "EM PROFESSORA LOUISINHA", alunos: 348, turmas: 14 },
+        { id: 31, nome: "EM PROFESSORA MARIA NOSIDIA PALMEIRAS DAS NEVES", alunos: 287, turmas: 10 },
+        { id: 32, nome: "EM PROFESSORA SILENE DE ANDRADE", alunos: 170, turmas: 6 },
+        { id: 33, nome: "EM REGINA HELOU", alunos: 278, turmas: 10 },
+        { id: 34, nome: "EM SANTA RITA DE CÁSSIA (VALE DAS POMBAS)", alunos: 103, turmas: 8 },
+        { id: 35, nome: "EM SANTA TEREZINHA", alunos: 130, turmas: 7 },
+        { id: 36, nome: "EM SANTO ANTÔNIO", alunos: 246, turmas: 10 },
+        { id: 37, nome: "EM SEBASTIÃO ARANTES", alunos: 244, turmas: 10 },
+        { id: 38, nome: "EM STEPHÂNIA ALVES BISPO", alunos: 283, turmas: 10 },
+        { id: 39, nome: "EM TARGINO DE AGUIAR", alunos: 193, turmas: 7 },
+        { id: 40, nome: "EM VILA ROSA", alunos: 222, turmas: 8 },
+        { id: 41, nome: "EM ZEVERA ANDREA VECCI", alunos: 344, turmas: 13 },
+        { id: 42, nome: "EMTI PROFESSORA MARLEI GARCIA", alunos: 414, turmas: 16 },
+        { id: 43, nome: "EMTI ROTARY CLUB DE GOIANIA", alunos: 180, turmas: 8 },
+        { id: 44, nome: "EMTI SANTA MARTA", alunos: 182, turmas: 9 },
+        { id: 45, nome: "ESCOLA JOÃO CRISOSTOMO ROSA", alunos: 135, turmas: 5 },
+        { id: 46, nome: "ESCOLA MUNICIPAL GO-04", alunos: 92, turmas: 5 }
+    ];
 
-        // --- BANCO DE DADOS CAPEX (BLOCO 3) ---
-        // (Mantém os mesmos valores base da proposta principal)
-        const dadosCapex = [
-            { id: 'c1', produto: "Flauta", qtdPorEscola: 112, vlrAquisicao: 62.00 },
-            { id: 'c2', produto: "Teclado", qtdPorEscola: 20, vlrAquisicao: 1200.00 },
-            { id: 'c3', produto: "Violão", qtdPorEscola: 20, vlrAquisicao: 1100.00 },
-            { id: 'c4', produto: "Uniforme (Balé)", qtdPorEscola: 70, vlrAquisicao: 160.00 },
-            { id: 'c5', produto: "Jogos de Tabuleiro", qtdPorEscola: 80, vlrAquisicao: 180.00 },
-            { id: 'c6', produto: "Bola de Voleibol", qtdPorEscola: 12, vlrAquisicao: 250.00 },
-            { id: 'c7', produto: "Mesa (Tênis)", qtdPorEscola: 8, vlrAquisicao: 2500.00 },
-            { id: 'c8', produto: "Kimono", qtdPorEscola: 336, vlrAquisicao: 340.00 },
-            // { id: 'c9', produto: "Colchonetes", qtdPorEscola: 80, vlrAquisicao: 76.50 }, // ITEM EXCLUÍDO
-            { id: 'c10', produto: "Raquete/tênis/bola/rede", qtdPorEscola: 8, vlrAquisicao: 250.00 },
-            { id: 'c11', produto: "Tatame", qtdPorEscola: 1, vlrAquisicao: 10200.00 },
-            { id: 'c12', produto: "Maleta Robótica I", qtdPorEscola: 8, vlrAquisicao: 2300.00 },
-            { id: 'c13', produto: "Maleta Torneio", qtdPorEscola: 2, vlrAquisicao: 6200.00 },
-            { id: 'c14', produto: "Maleta Robótica II", qtdPorEscola: 10, vlrAquisicao: 3900.00 },
-            { id: 'c15', produto: "Carrinho de Notebook", qtdPorEscola: 2, vlrAquisicao: 8000.00 },
-            { id: 'c16', produto: "Notebook", qtdPorEscola: 73, vlrAquisicao: 6200.00 },
-            { id: 'c17', produto: "Caixa de Som", qtdPorEscola: 2, vlrAquisicao: 2000.00 },
-            // ITENS COM LÓGICA DE CÁLCULO ALTERADA
-            { id: 'c18', produto: "Kit Artes Circenses", qtdPorEscola: 1, vlrAquisicao: 52800.00, tipoCalculo: 'porGrupoEscola', grupo: 3 },
-            { id: 'c19', produto: "Kit Robótica", qtdPorEscola: 1, vlrAquisicao: 39920.00 },
-            { id: 'c20', produto: "Kit Dança Rítmica", qtdPorEscola: 1, vlrAquisicao: 62400.00, tipoCalculo: 'porGrupoEscola', grupo: 3 }
-        ];
+    const dadosCapex = [
+        { id: 'c1', produto: "Flauta", qtd: 112, unidade: 'escola', vlrAquisicao: 62.00 },
+        { id: 'c2', produto: "Teclado", qtd: 20, unidade: 'escola', vlrAquisicao: 1200.00 },
+        { id: 'c3', produto: "Violão", qtd: 20, unidade: 'escola', vlrAquisicao: 1100.00 },
+        { id: 'c4', produto: "Uniforme (Balé)", qtd: 70, unidade: 'escola', vlrAquisicao: 160.00 },
+        { id: 'c5', produto: "Jogos de Tabuleiro", qtd: 80, unidade: 'escola', vlrAquisicao: 180.00 },
+        { id: 'c6', produto: "Bola de Voleibol", qtd: 12, unidade: 'escola', vlrAquisicao: 250.00 },
+        { id: 'c7', produto: "Mesa (Tênis)", qtd: 8, unidade: 'escola', vlrAquisicao: 2500.00 },
+        { id: 'c8', produto: "Kimono", qtd: 336, unidade: 'escola', vlrAquisicao: 340.00 },
+        { id: 'c10', produto: "Raquete/tênis/bola/rede", qtd: 8, unidade: 'escola', vlrAquisicao: 250.00 },
+        { id: 'c11', produto: "Tatame", qtd: 1, unidade: 'escola', vlrAquisicao: 10200.00 },
+        { id: 'c12', produto: "Maleta Robótica I", qtd: 8, unidade: 'escola', vlrAquisicao: 2300.00 },
+        { id: 'c13', produto: "Maleta Torneio", qtd: 2, unidade: 'escola', vlrAquisicao: 6200.00 },
+        { id: 'c14', produto: "Maleta Robótica II", qtd: 10, unidade: 'escola', vlrAquisicao: 3900.00 },
+        { id: 'c15', produto: "Carrinho de Notebook", qtd: 2, unidade: 'escola', vlrAquisicao: 8000.00 },
+        { id: 'c16', produto: "Notebook", qtd: 73, unidade: 'escola', vlrAquisicao: 6200.00, locacao50: true },
+        { id: 'c17', produto: "Caixa de Som", qtd: 2, unidade: 'escola', vlrAquisicao: 2000.00 },
+        { id: 'c18', produto: "Kit Artes Circenses", qtd: 1, unidade: 'grupo3', vlrAquisicao: 52800.00 },
+        { id: 'c19', produto: "Kit Robótica", qtd: 1, unidade: 'escola', vlrAquisicao: 39920.00 },
+        { id: 'c20', produto: "Kit Dança Rítmica", qtd: 1, unidade: 'grupo3', vlrAquisicao: 62400.00 }
+    ];
 
-        // --- REFERÊNCIAS DO DOM - BLOCO 1 ---
-        const listaEscolasContainer = document.getElementById('lista-escolas');
-        const filtroEscolaInput = document.getElementById('filtro-escola');
-        const acrescimoInput = document.getElementById('acrescimo-percent');
-        const totalEscolasEl = document.getElementById('total-escolas');
-        const totalAlunosBaseEl = document.getElementById('total-alunos-base');
-        const totalTurmasEl = document.getElementById('total-turmas');
-        const mediaAlunosEl = document.getElementById('media-alunos');
-        const totalAlunosFinalEl = document.getElementById('total-alunos-final');
-        const analisePropostaEl = document.getElementById('analise-proposta');
-        const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
-        const btnSelecionarTodas = document.getElementById('btn-selecionar-todas');
-
-        // --- REFERÊNCIAS DO DOM - BLOCO 2 ---
-        const opexTotalEscolasEl = document.getElementById('opex-total-escolas');
-        const opexTotalTurmasEl = document.getElementById('opex-total-turmas');
-        const opexPeriodoMesesEl = document.getElementById('opex-periodo-meses');
-        const opexModeloAtendimentoSelect = document.getElementById('opex-modelo-atendimento');
-        const opexBolsaMonitorInput = document.getElementById('opex-bolsa-monitor');
-        const opexValorHoraProfessorInput = document.getElementById('opex-valor-hora-professor');
-        const opexCustoAssistenteInput = document.getElementById('opex-custo-assistente');
-        const opexCustoAnalista2Input = document.getElementById('opex-custo-analista2');
-        const opexCustoAnalista3Input = document.getElementById('opex-custo-analista3');
-        const opexQtdAssistentesEl = document.getElementById('opex-qtd-assistentes');
-        const opexQtdAnalistas2El = document.getElementById('opex-qtd-analistas2');
-        const opexQtdAnalistas3El = document.getElementById('opex-qtd-analistas3');
-        const opexCustoMonitoresEl = document.getElementById('opex-custo-monitores');
-        const opexCustoProfessoresEl = document.getElementById('opex-custo-professores');
-        const opexCustoEquipeEl = document.getElementById('opex-custo-equipe');
-        const opexTotalAnualEl = document.getElementById('opex-total-anual');
-
-
-        // --- REFERÊNCIAS DO DOM - BLOCO 3 ---
-        const capexTotalEscolasEl = document.getElementById('capex-total-escolas');
-        const capexTabelaItensContainer = document.getElementById('capex-tabela-itens');
-        const capexTotalGeralEl = document.getElementById('capex-total-geral');
-
-        // --- REFERÊNCIAS DO DOM - BLOCO 4 ---
-        const totalOpexConsolidadoEl = document.getElementById('total-opex-consolidado');
-        const totalCapexConsolidadoEl = document.getElementById('total-capex-consolidado');
-        const bl4CondicaoPagamentoSelect = document.getElementById('bl4-condicao-pagamento'); 
-        const bl4AjustePagamentoDisplayEl = document.getElementById('bl4-ajuste-pagamento-display'); 
-        const totalGeralPropostaEl = document.getElementById('total-geral-proposta');
-        const btnGerarPdfCompleto = document.getElementById('btn-gerar-pdf-completo');
-        const btnGerarPdfResumo = document.getElementById('btn-gerar-pdf-resumo');
-
-        // --- REFERÊNCIAS DO DOM - BLOCO 5 (MARGEM) ---
-        const bl5MargemCustoHoraProfessorInput = document.getElementById('bl5-margem-custo-hora-professor');
-        const bl5MargemCapexPercentInput = document.getElementById('bl5-margem-capex-percent');
-        const bl5MargemCustoOpexFixoEl = document.getElementById('bl5-margem-custo-opex-fixo');
-        const bl5MargemPropostaClienteEl = document.getElementById('bl5-margem-proposta-cliente');
-        const bl5MargemCustoRealSesiEl = document.getElementById('bl5-margem-custo-real-sesi');
-        const bl5MargemLucroBrutoEl = document.getElementById('bl5-margem-lucro-bruto');
-        const bl5MargemReguaCustoBar = document.getElementById('bl5-margem-regua-custo');
-        const bl5MargemReguaLucroBar = document.getElementById('bl5-margem-regua-lucro');
-        const bl5MargemReguaCustoPercent = document.getElementById('bl5-margem-regua-custo-percent');
-        const bl5MargemReguaLucroPercent = document.getElementById('bl5-margem-regua-lucro-percent');
-
-
-        // --- FUNÇÃO PARA FORMATAR MOEDA ---
-        function formatarMoeda(valor) {
-            return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-        
-        // --- FUNÇÃO PARA CONVERTER MOEDA FORMATADA EM NÚMERO ---
-        function parseMoeda(valorString) {
-            if (!valorString) return 0;
-            const valorLimpo = valorString.replace('+', '').replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-            return parseFloat(valorLimpo) || 0;
-        }
-
-
-        // --- FUNÇÃO PARA RENDERIZAR A LISTA DE ESCOLAS (BLOCO 1) ---
-        function renderizarListaEscolas(filtro = '') {
-            listaEscolasContainer.innerHTML = '';
-            const filtroLowerCase = filtro.toLowerCase();
-
-            const escolasFiltradas = dadosEscolas.filter(escola => 
-                escola.nome.toLowerCase().includes(filtroLowerCase)
-            );
-
-            if (escolasFiltradas.length === 0) {
-                listaEscolasContainer.innerHTML = '<p class="text-gray-500 text-center">Nenhuma escola encontrada.</p>';
-                return;
-            }
-
-            escolasFiltradas.forEach(escola => {
-                const div = document.createElement('div');
-                div.className = 'bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:border-cyan-500 transition-all duration-200';
-                div.innerHTML = `
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" 
-                               class="escola-checkbox h-5 w-5 text-cyan-600 rounded border-gray-300 focus:ring-cyan-500" 
-                               data-id="${escola.id}"
-                               data-alunos="${escola.alunos}"
-                               data-turmas="${escola.turmas}">
-                        <div>
-                            <span class="font-semibold text-gray-800">${escola.nome}</span>
-                            <span class="text-sm text-gray-500 block">
-                                ${escola.alunos} Alunos | ${escola.turmas} Turmas
-                            </span>
-                        </div>
-                    </label>
-                `;
-                listaEscolasContainer.appendChild(div);
-            });
-        }
-
-        // --- FUNÇÃO PARA RENDERIZAR A TABELA CAPEX (BLOCO 3) ---
-        function renderizarTabelaCapex() {
-            capexTabelaItensContainer.innerHTML = '';
-            dadosCapex.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'capex-item-row';
-                tr.dataset.id = item.id; // Adicionado ID para a lógica de cálculo
-                
-                const vlrBaseAquisicao = parseFloat(item.vlrAquisicao);
-
-                let percentualLocacao = 0.30;
-                let textoLocacao = 'Locação (30%):';
-                if (item.id === 'c16') { // Exceção para Notebook
-                    percentualLocacao = 0.50;
-                    textoLocacao = 'Locação (50%):';
-                }
-                const vlrBaseLocacao = vlrBaseAquisicao * percentualLocacao;
-                
-                // Lógica da unidade de cálculo (nova)
-                let unidadeLabel = '(por escola)';
-                if (item.tipoCalculo === 'porGrupoEscola') {
-                    unidadeLabel = `(por ${item.grupo} escolas)`;
-                }
-
-                tr.innerHTML = `
-                    <td class="px-3 py-3 whitespace-nowrap align-top">
-                        <input type="checkbox" checked class="capex-checkbox h-5 w-5 text-cyan-600 rounded border-gray-300 focus:ring-cyan-500 mt-2">
-                    </td>
-                    <td class="px-3 py-3 whitespace-nowrap align-top">
-                        <span class="text-sm font-medium text-gray-900">${item.produto}</span>
-                    </td>
-                    <td class="px-3 py-3 whitespace-nowrap align-top">
-                        <input type="number" min="0" value="${item.qtdPorEscola}" class="capex-qtd-escola table-input">
-                        <!-- Lógica de unidade de cálculo (nova) -->
-                        <span class="text-xs text-gray-500 ml-1">
-                           ${unidadeLabel}
-                        </span>
-                    </td>
-                    <td class="px-3 py-3 whitespace-nowrap align-top">
-                        <fieldset>
-                            <!-- Opção 1: Aquisição (Agora é o Input Base) -->
-                            <div class="flex items-center space-x-2 text-sm mb-2">
-                                <input type="radio" name="custo-${item.id}" value="aquisicao" class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300" checked>
-                                <span>Aquisição:</span>
-                                <input type="number" step="0.01" value="${vlrBaseAquisicao.toFixed(2)}" class="capex-valor-base-input table-input w-24">
-                            </div>
-                            
-                            <!-- Opção 2: Locação (Calculado e Display) -->
-                            <div class="flex items-center space-x-2 text-sm">
-                                <input type="radio" name="custo-${item.id}" value="locacao" class="capex-tipo-custo h-4 w-4 text-cyan-600 border-gray-300" data-percentual="${percentualLocacao}">
-                                <span>${textoLocacao}</span>
-                                <span class="capex-locacao-display font-medium text-gray-700">${formatarMoeda(vlrBaseLocacao)}</span>
-                            </div>
-                        </fieldset>
-                    </td>
-                    <td class="px-3 py-3 whitespace-nowrap text-right align-top">
-                        <span class="capex-custo-total text-sm font-semibold text-gray-900">R$ 0,00</span>
-                    </td>
-                `;
-                capexTabelaItensContainer.appendChild(tr);
-            });
-        }
-
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 2 (OPEX) ---
-        function atualizarOpex(totalEscolas, totalTurmas) {
-            // Atualiza displays base
-            opexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-            opexTotalTurmasEl.innerText = totalTurmas.toLocaleString('pt-BR');
-            
-            // Lê valores dos inputs
-            const periodoMeses = parseInt(opexPeriodoMesesEl.innerText) || 9;
-            const modeloHoras = parseFloat(opexModeloAtendimentoSelect.value) || 288;
-            const bolsaMonitor = parseFloat(opexBolsaMonitorInput.value) || 0;
-            const valorHoraProfessor = parseFloat(opexValorHoraProfessorInput.value) || 0;
-            const custoAssistente = parseFloat(opexCustoAssistenteInput.value) || 0;
-            const custoAnalista2 = parseFloat(opexCustoAnalista2Input.value) || 0;
-            const custoAnalista3 = parseFloat(opexCustoAnalista3Input.value) || 0;
-
-            // Calcula Custos
-            const custoMonitores = totalTurmas * bolsaMonitor * periodoMeses;
-            const custoProfessores = totalTurmas * modeloHoras * valorHoraProfessor;
-
-            const numAssistentes = Math.ceil(totalEscolas / 5);
-            const numAnalistas2 = Math.ceil(totalEscolas / 5);
-            const numAnalistas3 = totalEscolas > 0 ? 2 : 0; // Custo fixo do projeto
-
-            // ATUALIZA DOM - NOVOS CARDS DE QUANTIDADE
-            opexQtdAssistentesEl.innerText = numAssistentes.toLocaleString('pt-BR');
-            opexQtdAnalistas2El.innerText = numAnalistas2.toLocaleString('pt-BR');
-            opexQtdAnalistas3El.innerText = numAnalistas3.toLocaleString('pt-BR');
-            
-            const custoEquipeTecnica = (
-                (numAssistentes * custoAssistente) +
-                (numAnalistas2 * custoAnalista2) +
-                (numAnalistas3 * custoAnalista3)
-            ) * periodoMeses;
-
-            const totalOpex = custoMonitores + custoProfessores + custoEquipeTecnica;
-
-            // Atualiza displays de custo
-            opexCustoMonitoresEl.innerText = formatarMoeda(custoMonitores);
-            opexCustoProfessoresEl.innerText = formatarMoeda(custoProfessores);
-            opexCustoEquipeEl.innerText = formatarMoeda(custoEquipeTecnica);
-            opexTotalAnualEl.innerText = formatarMoeda(totalOpex);
-            
-            return totalOpex;
-        }
-        
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 3 (CAPEX) ---
-        function atualizarCapex(totalEscolas, totalTurmas) {
-            capexTotalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-            let totalCapexGeral = 0;
-            const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
-            
-            itemRows.forEach(row => {
-                const checkbox = row.querySelector('.capex-checkbox');
-                const qtdPorEscolaInput = row.querySelector('.capex-qtd-escola');
-                const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
-                const custoTotalSpan = row.querySelector('.capex-custo-total');
-                const valorBaseInput = row.querySelector('.capex-valor-base-input');
-                const valorBase = parseFloat(valorBaseInput.value) || 0;
-                const qtd = parseFloat(qtdPorEscolaInput.value) || 0; // Renomeado de qtdPorEscola
-                let valorUnitarioEscolhido = 0;
-
-                if (radioSelecionado.value === 'aquisicao') {
-                    valorUnitarioEscolhido = valorBase;
-                } else {
-                    const percentual = parseFloat(radioSelecionado.dataset.percentual) || 0.30;
-                    valorUnitarioEscolhido = valorBase * percentual;
-                }
-                
-                // --- LÓGICA DE CÁLCULO ATUALIZADA ---
-                const itemId = row.dataset.id;
-                const itemConfig = dadosCapex.find(d => d.id === itemId);
-                let custoTotalItem = 0;
-
-                if (itemConfig && itemConfig.tipoCalculo === 'porGrupoEscola') {
-                    // Nova Lógica: 1 kit para cada 3 escolas
-                    const numGrupos = Math.ceil(totalEscolas / itemConfig.grupo);
-                    custoTotalItem = qtd * valorUnitarioEscolhido * numGrupos;
-                } else {
-                    // Lógica Padrão: por escola
-                    custoTotalItem = qtd * valorUnitarioEscolhido * totalEscolas;
-                }
-                // --- FIM DA LÓGICA ATUALIZADA ---
-                
-                custoTotalSpan.innerText = formatarMoeda(custoTotalItem);
-
-                if (checkbox.checked) {
-                    totalCapexGeral += custoTotalItem;
-                }
-            });
-            capexTotalGeralEl.innerText = formatarMoeda(totalCapexGeral);
-            return totalCapexGeral;
-        }
-
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 4 (CONSOLIDAÇÃO) ---
-        function atualizarConsolidacao(totalOpex, totalCapex) {
-            const subTotalOpexCapex = totalOpex + totalCapex;
-            
-            // Lógica de Assistentes foi MOVIDA para o Bloco 2 (Equipe Técnica)
-            const subtotalProposta = subTotalOpexCapex; // Apenas a soma simples
-
-            // Lógica de Pagamento
-            const condicaoPagamento = bl4CondicaoPagamentoSelect.value;
-            let ajustePercent = 0;
-            if (condicaoPagamento === 'mensal') ajustePercent = 0.03;
-            else if (condicaoPagamento === 'semestral') ajustePercent = -0.02;
-            else if (condicaoPagamento === 'avista') ajustePercent = -0.05;
-            
-            const ajustePagamentoValor = subtotalProposta * ajustePercent;
-            const totalGeral = subtotalProposta + ajustePagamentoValor;
-
-            // Atualiza DOM Bloco 4
-            totalOpexConsolidadoEl.innerText = formatarMoeda(totalOpex);
-            totalCapexConsolidadoEl.innerText = formatarMoeda(totalCapex);
-            bl4AjustePagamentoDisplayEl.innerText = (ajustePagamentoValor >= 0 ? "+ " : "") + formatarMoeda(ajustePagamentoValor);
-            totalGeralPropostaEl.innerText = formatarMoeda(totalGeral);
-            
-            // --- ATUALIZA O BLOCO 5 EM CASCATA ---
-            atualizarBloco5();
-        }
-
-        // --- FUNÇÃO PARA ATUALIZAR CÁLCULOS DO BLOCO 5 (MARGEM DE LUCRO) ---
-        function atualizarBloco5() {
-            // 1. Obter Valores da Proposta (Preço para o Cliente)
-            const totalPropostaCliente = parseMoeda(totalGeralPropostaEl.innerText);
-            const totalCapexProposta = parseMoeda(totalCapexConsolidadoEl.innerText);
-            
-            // 2. Obter Escopo (do Bloco 1 e 2)
-            const totalTurmas = parseMoeda(opexTotalTurmasEl.innerText);
-            const modeloHoras = parseFloat(opexModeloAtendimentoSelect.value) || 288;
-            const custoMonitoresProposta = parseMoeda(opexCustoMonitoresEl.innerText);
-            const custoEquipeTecnicaProposta = parseMoeda(opexCustoEquipeEl.innerText);
-
-            // 3. Obter Parâmetros de Custo Real (Interno)
-            const custoHoraRealProfessor = parseFloat(bl5MargemCustoHoraProfessorInput.value) || 0;
-            const margemCapexPercent = parseFloat(bl5MargemCapexPercentInput.value) || 0;
-
-            // 4. Calcular Custo Real (SESI)
-            
-            // 4a. Custo OPEX Real
-            // Custo real dos professores (o único com margem variável)
-            const custoProfessoresReal = totalTurmas * modeloHoras * custoHoraRealProfessor;
-            // Custos de Monitores e Equipe são custos fixos (preço = custo)
-            const custoOpexFixoReal = custoMonitoresProposta + custoEquipeTecnicaProposta;
-            const custoOpexReal = custoProfessoresReal + custoOpexFixoReal;
-            
-            // 4b. Custo CAPEX Real
-            // Preço = Custo * (1 + Margem) => Custo = Preço / (1 + Margem)
-            const custoCapexReal = totalCapexProposta / (1 + (margemCapexPercent / 100));
-
-            // 4c. Custo Total Real
-            const custoTotalRealSesi = custoOpexReal + custoCapexReal;
-
-            // 5. Calcular Lucratividade
-            const lucroBruto = totalPropostaCliente - custoTotalRealSesi;
-
-            // 6. Atualizar DOM do Bloco 5
-            bl5MargemPropostaClienteEl.innerText = formatarMoeda(totalPropostaCliente);
-            bl5MargemCustoRealSesiEl.innerText = formatarMoeda(custoTotalRealSesi);
-            bl5MargemLucroBrutoEl.innerText = formatarMoeda(lucroBruto > 0 ? lucroBruto : 0);
-            
-            // Atualiza displays de custo real (para transparência)
-            bl5MargemCustoOpexFixoEl.innerText = formatarMoeda(custoOpexFixoReal);
-
-            // 7. Atualizar Régua de Lucratividade
-            let percentCusto = 0;
-            let percentLucro = 0;
-            if (totalPropostaCliente > 0) {
-                percentCusto = (custoTotalRealSesi / totalPropostaCliente) * 100;
-                percentLucro = (lucroBruto / totalPropostaCliente) * 100;
-            }
-            
-            if (percentCusto > 100) percentCusto = 100;
-            if (percentLucro < 0) percentLucro = 0;
-            if ((percentCusto + percentLucro) > 100.1) { // Pequena margem para arredondamento
-                 percentLucro = 100 - percentCusto;
-            }
-
-            bl5MargemReguaCustoBar.style.width = `${percentCusto}%`;
-            bl5MargemReguaLucroBar.style.width = `${percentLucro}%`;
-            
-            bl5MargemReguaCustoPercent.innerText = percentCusto > 15 ? `${percentCusto.toFixed(1)}%` : '';
-            bl5MargemReguaLucroPercent.innerText = percentLucro > 15 ? `${percentLucro.toFixed(1)}%` : '';
-        }
-
-
-        // --- FUNÇÃO PRINCIPAL (BLOCO 1) ---
-        function atualizarTotais() {
-            let totalEscolas = 0;
-            let totalAlunosBase = 0;
-            let totalTurmas = 0;
-
-            const checkboxesSelecionadas = document.querySelectorAll('.escola-checkbox:checked');
-            
-            checkboxesSelecionadas.forEach(check => {
-                totalEscolas++;
-                totalAlunosBase += parseInt(check.dataset.alunos);
-                totalTurmas += parseInt(check.dataset.turmas);
-            });
-
-            const mediaAlunos = totalTurmas > 0 ? (totalAlunosBase / totalTurmas) : 0;
-            const acrescimoPercent = parseFloat(acrescimoInput.value) || 0;
-            const totalAlunosFinal = Math.round(totalAlunosBase * (1 + (acrescimoPercent / 100)));
-
-            // Atualiza Bloco 1
-            totalEscolasEl.innerText = totalEscolas.toLocaleString('pt-BR');
-            totalAlunosBaseEl.innerText = totalAlunosBase.toLocaleString('pt-BR');
-            totalTurmasEl.innerText = totalTurmas.toLocaleString('pt-BR');
-            mediaAlunosEl.innerText = mediaAlunos.toFixed(1).replace('.', ',');
-            totalAlunosFinalEl.innerText = totalAlunosFinal.toLocaleString('pt-BR');
-            atualizarAnalise(totalEscolas, totalAlunosBase, totalTurmas, totalAlunosFinal, mediaAlunos);
-
-            // Recalcula Bloco 2
-            const totalOpexNumerico = atualizarOpex(totalEscolas, totalTurmas); 
-            
-            // Recalcula Bloco 3
-            const totalCapexNumerico = atualizarCapex(totalEscolas, totalTurmas); // Passa totalTurmas
-
-            // Recalcula Bloco 4 (que agora chama o Bloco 5 internamente)
-            atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico);
-        }
-
-        // --- FUNÇÃO PARA ATUALIZAR A ANÁLISE DINÂMICA (BLOCO 1) ---
-        function atualizarAnalise(escolas, alunosBase, turmas, alunosFinal, media) {
-            if (escolas === 0) {
-                analisePropostaEl.innerHTML = '<p>Selecione uma ou mais escolas para gerar a análise de público-alvo e o potencial de impacto da parceria.</p>';
-                return;
-            }
-            let analiseHTML = `
-                <p>A configuração selecionada para esta proposta abrange <strong class="text-gray-900">${escolas} unidade${escolas > 1 ? 's' : ''} educacional${escolas > 1 ? 'is' : ''}</strong>, impactando diretamente uma base de <strong class="text-gray-900">${alunosBase.toLocaleString('pt-BR')} alunos</strong>.</p>
-                <p>Este público está distribuído em <strong class="text-gray-900">${turmas.toLocaleString('pt-BR')} turmas</strong>, apresentando uma média de <strong class="text-gray-900">${media.toFixed(1).replace('.', ',')} alunos por turma</strong>. Esta é uma métrica crucial para o planejamento da alocação de instrutores e materiais para as oficinas.</p>
-                <p>Considerando a projeção de acréscimo (alunos de inclusão, etc.), o público-alvo final estimado para o planejamento de custos é de <strong class="text-cyan-700 text-lg">${alunosFinal.toLocaleString('pt-BR')} estudantes</strong>.</p>
-                <p class="mt-4 pt-4 border-t border-gray-200 text-sm"><strong class="text-gray-900">Ponto Forte:</strong> O modelo de parceria focado neste agrupamento de ${escolas} escola${escolas > 1 ? 's' : ''} permite uma operação ${escolas > 1 ? 'concentrada e otimizada' : 'piloto e de alto impacto'}, facilitando a logística e a gestão pedagógica da equipe SESI.</p>
+    // DOM
+    const listaEl = document.getElementById('lista-escolas');
+    const filtroEl = document.getElementById('filtro-escola');
+    const acrescimoEl = document.getElementById('acrescimo-percent');
+    const capexTableEl = document.getElementById('capex-tabela-itens');
+    
+    // Render Lista Escolas
+    function renderEscolas(filter='') {
+        listaEl.innerHTML = '';
+        const filtered = dadosEscolas.filter(e => e.nome.toLowerCase().includes(filter.toLowerCase()));
+        filtered.forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center p-2 border-b hover:bg-gray-50';
+            div.innerHTML = `
+                <input type="checkbox" class="escola-checkbox mr-3 h-4 w-4 text-cyan-600" data-id="${e.id}" data-alunos="${e.alunos}" data-turmas="${e.turmas}">
+                <div class="text-sm">
+                    <div class="font-bold text-gray-700">${e.nome}</div>
+                    <div class="text-xs text-gray-500">${e.alunos} Alunos | ${e.turmas} Turmas</div>
+                </div>
             `;
-            analisePropostaEl.innerHTML = analiseHTML;
-        }
-
-        // --- FUNÇÃO PARA LIMPAR FILTROS (BLOCO 1) ---
-        function limparFiltrosBloco1() {
-            filtroEscolaInput.value = '';
-            acrescimoInput.value = '0';
-            const checkboxes = document.querySelectorAll('.escola-checkbox:checked');
-            checkboxes.forEach(check => {
-                check.checked = false;
-            });
-            renderizarListaEscolas();
-            atualizarTotais();
-        }
-
-        // --- FUNÇÃO PARA SELECIONAR TODAS AS ESCOLAS (BLOCO 1) ---
-        function selecionarTodasEscolas() {
-            filtroEscolaInput.value = ''; // Limpa o filtro
-            renderizarListaEscolas(); // Renderiza todas as escolas (neste caso, 9)
-            const checkboxes = document.querySelectorAll('#lista-escolas .escola-checkbox');
-            checkboxes.forEach(check => {
-                check.checked = true;
-            });
-            atualizarTotais(); // Recalcula tudo
-        }
-
-        // --- FUNÇÃO DE CALLBACK PARA RECALCULAR BLOCO 2 E 4 ---
-        function recalcularOpexEConsolidacao() {
-            const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
-            const totalEscolasAtual = parseInt(escolasStr) || 0;
-            const turmasStr = totalTurmasEl.innerText.replace(/\./g, '');
-            const totalTurmasAtual = parseInt(turmasStr) || 0;
-            
-            const totalOpexNumerico = atualizarOpex(totalEscolasAtual, totalTurmasAtual);
-            const totalCapexNumerico = parseMoeda(capexTotalGeralEl.innerText);
-            atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
-        }
-
-        // --- FUNÇÃO DE CALLBACK PARA RECALCULAR BLOCO 3 E 4 ---
-        function recalcularCapexEConsolidacao() {
-            const escolasStr = totalEscolasEl.innerText.replace(/\./g, '');
-            const totalEscolasAtual = parseInt(escolasStr) || 0;
-            const turmasStr = totalTurmasEl.innerText.replace(/\./g, '');
-            const totalTurmasAtual = parseInt(turmasStr) || 0;
-
-            const totalCapexNumerico = atualizarCapex(totalEscolasAtual, totalTurmasAtual); // Passa turmas
-            const totalOpexNumerico = parseMoeda(opexTotalAnualEl.innerText); // Pega o valor atual
-            atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
-        }
-
-        // --- FUNÇÃO DE CALLBACK PARA RECALCULAR APENAS O BLOCO 4 ---
-        function recalcularApenasConsolidacao() {
-            const totalOpexNumerico = parseMoeda(totalOpexConsolidadoEl.innerText);
-            const totalCapexNumerico = parseMoeda(totalCapexConsolidadoEl.innerText);
-            atualizarConsolidacao(totalOpexNumerico, totalCapexNumerico); // (Chama o Bloco 5)
-        }
-
-
-        // --- FUNÇÃO HELPER PARA HEADER/FOOTER DO PDF (COMPARTILHADA) ---
-        function addHeaderFooterPDF(doc, dataGeracao) {
-            const logoImg = document.querySelector('header img');
-            const pageCount = doc.internal.getNumberOfPages();
-            
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                
-                // Cabeçalho alinhado com o HTML
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(80, 80, 80);
-                let textY = 18;
-                doc.text("Proposta de Parceria - Atividades Complementares (Tempo Integral)", 15, textY);
-                doc.setFontSize(9);
-                doc.setTextColor(0, 107, 137); // Ciano
-                doc.text("Versão Piloto - 9 Escolas", 15, textY + 5);
-                
-                if (logoImg) {
-                    try {
-                        const logoHeight = 16;
-                        const logoWidth = (logoImg.width / logoImg.height) * logoHeight;
-                        const logoX = doc.internal.pageSize.getWidth() - 15 - logoWidth;
-                        const logoY = textY - 8;
-                        doc.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
-                    } catch (e) {
-                        console.error("Erro ao adicionar imagem ao PDF: ", e);
-                        doc.text("Logo", 180, 15);
-                    }
-                }
-                
-                // Linha divisória
-                doc.setLineWidth(0.5);
-                doc.line(15, 30, 195, 30);
-                
-                // Rodapé
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text(`Gerado em: ${dataGeracao}`, 15, 288);
-                doc.text(`Página ${i} de ${pageCount}`, 195, 288, { align: 'right' });
-            }
-        }
-
-        // --- FUNÇÃO PARA GERAR O PDF (Versão Completa com AutoTable) ---
-        // ** BLOCO 5 REMOVIDO DESTA FUNÇÃO **
-        function gerarPDFCompleto() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-            const dataGeracao = new Date().toLocaleString('pt-BR');
-            let y = 40;
-
-            // --- PÁGINA 1: BLOCO 1 E 2 ---
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(40, 40, 40);
-            doc.text("BLOCO 1: DIMENSIONAMENTO DO PÚBLICO-ALVO", 15, y);
-            y += 8;
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
-                body: [
-                    ['Total Escolas', 'Total Alunos (Base)', 'Total Turmas', 'Média Alunos/Turma'],
-                    [totalEscolasEl.innerText, totalAlunosBaseEl.innerText, totalTurmasEl.innerText, mediaAlunosEl.innerText]
-                ],
-                didDrawPage: (data) => { if (data.pageNumber === 1) addHeaderFooterPDF(doc, dataGeracao); }
-            });
-            y = doc.autoTable.previous.finalY + 8;
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2, fillColor: [255, 255, 255], textColor: [0, 0, 0] },
-                body: [
-                    ['Acréscimo Especiais (%)', 'Total Alunos (Final Estimado)'],
-                    [`${acrescimoInput.value}%`, totalAlunosFinalEl.innerText]
-                ],
-                headStyles: { fillColor: [241, 245, 249] },
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            y = doc.autoTable.previous.finalY + 10;
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text("Escolas Incluídas na Proposta:", 15, y);
-            y += 6;
-            const checkboxes = document.querySelectorAll('.escola-checkbox:checked');
-            let escolasData = [];
-            if (checkboxes.length > 0) {
-                checkboxes.forEach(check => {
-                    const escolaNome = check.closest('label').querySelector('span.font-semibold').innerText;
-                    const dados = dadosEscolas.find(e => e.id === parseInt(check.dataset.id));
-                    escolasData.push([escolaNome, dados.alunos, dados.turmas]);
-                });
-            } else {
-                escolasData.push(["Nenhuma escola selecionada.", "-", "-"]);
-            }
-            doc.autoTable({
-                startY: y, head: [['Unidade Educacional', 'Alunos', 'Turmas']], body: escolasData,
-                headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
-                bodyStyles: { fontSize: 8.5 },
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            y = doc.autoTable.previous.finalY + 10;
-            if (y > 170) { doc.addPage(); y = 40; } // Verificação de espaço para Bloco 2
-
-            // --- BLOCO 2: OPEX ---
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(40, 40, 40);
-            doc.text("BLOCO 2: CUSTOS OPERACIONAIS (OPEX)", 15, y);
-            y += 8;
-            const modeloAtendimentoTexto = opexModeloAtendimentoSelect.options[opexModeloAtendimentoSelect.selectedIndex].text;
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
-                body: [
-                    ['Total de Escolas (Base)', opexTotalEscolasEl.innerText],
-                    ['Total de Turmas (Base)', opexTotalTurmasEl.innerText],
-                    ['Período (Meses)', opexPeriodoMesesEl.innerText],
-                    ['Modelo de Atendimento', modeloAtendimentoTexto],
-                    ['Bolsa Monitor/mês (Editado)', formatarMoeda(opexBolsaMonitorInput.value)],
-                    ['Valor Hora Professor (Editado)', formatarMoeda(opexValorHoraProfessorInput.value)],
-                    ['Qtd. Assistentes (Calc.)', opexQtdAssistentesEl.innerText],
-                    ['Custo Assistente/mês (Editado)', formatarMoeda(opexCustoAssistenteInput.value)],
-                    ['Qtd. Analistas II (Calc.)', opexQtdAnalistas2El.innerText],
-                    ['Custo Analista II/mês (Editado)', formatarMoeda(opexCustoAnalista2Input.value)],
-                    ['Qtd. Analistas III (Calc.)', opexQtdAnalistas3El.innerText],
-                    ['Custo Analista III/mês (Editado)', formatarMoeda(opexCustoAnalista3Input.value)],
-                    [{ content: 'Custo Total Monitores (9 meses)', styles: { fontStyle: 'bold' } }, { content: opexCustoMonitoresEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
-                    [{ content: 'Custo Total Professores (Anual)', styles: { fontStyle: 'bold' } }, { content: opexCustoProfessoresEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
-                    [{ content: 'Custo Total Equipe Técnica (9 meses)', styles: { fontStyle: 'bold' } }, { content: opexCustoEquipeEl.innerText, styles: { fontStyle: 'bold', halign: 'right' } }],
-                    [{ content: 'Total OPEX (Anual)', styles: { fontStyle: 'bold', fontSize: 10, fillColor: [241, 245, 249] } },
-                     { content: opexTotalAnualEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right', fillColor: [241, 245, 249] } }]
-                ],
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            y = doc.autoTable.previous.finalY;
-
-            // --- PÁGINA 2: BLOCO 3 (CAPEX) ---
-            doc.addPage();
-            y = 40; 
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(40, 40, 40);
-            doc.text("BLOCO 3: CUSTOS DE AQUISIÇÃO (CAPEX)", 15, y);
-            y += 8;
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Base de Cálculo: ${capexTotalEscolasEl.innerText} escola(s) selecionada(s).`, 15, y);
-            y += 6;
-            // PDF: Cabeçalho da tabela atualizado (6 colunas)
-            const capexHead = [['Produto', 'Qtd.', 'Unidade', 'Tipo Custo', 'Vlr. Unitário', 'Custo Total']];
-            const capexBody = [];
-            const itemRows = capexTabelaItensContainer.querySelectorAll('.capex-item-row');
-            itemRows.forEach(row => {
-                const checkbox = row.querySelector('.capex-checkbox');
-                if (checkbox.checked) {
-                    const produto = row.querySelector('.text-sm.font-medium.text-gray-900').innerText;
-                    const qtd = row.querySelector('.capex-qtd-escola').value;
-                    const radioSelecionado = row.querySelector('.capex-tipo-custo:checked');
-                    const custoTotalLinha = row.querySelector('.capex-custo-total').innerText;
-                    const valorBase = parseFloat(row.querySelector('.capex-valor-base-input').value) || 0;
-                    let tipoCusto = "N/A";
-                    let vlrUnitario = 0;
-                    
-                    // PDF: Lógica para buscar a unidade de cálculo
-                    const itemConfig = dadosCapex.find(d => d.produto === produto);
-                    let unidade = 'por escola';
-                    if (itemConfig && itemConfig.tipoCalculo === 'porGrupoEscola') {
-                        unidade = `por ${itemConfig.grupo} escolas`;
-                    }
-
-                    // *** INÍCIO DA CORREÇÃO DO BUG ***
-                    if (radioSelecionado.value === 'aquisicao') {
-                        tipoCusto = "Aquisição";
-                        vlrUnitario = valorBase;
-                    } else { // Locação
-                        const radioLocacao = row.querySelector('input[value="locacao"]');
-                        const percentual = parseFloat(radioLocacao.dataset.percentual) || 0.30;
-                        tipoCusto = `Locação (${(percentual * 100).toFixed(0)}%)`;
-                        vlrUnitario = valorBase * percentual;
-                    }
-                    // *** FIM DA CORREÇÃO DO BUG ***
-                    
-                    // PDF: Corpo da tabela atualizado (6 colunas)
-                    capexBody.push([produto, qtd, unidade, tipoCusto, formatarMoeda(vlrUnitario), { content: custoTotalLinha, styles: { halign: 'right' } }]);
-                }
-            });
-            capexBody.push([
-                // PDF: Colspan atualizado para 5
-                { content: 'TOTAL CAPEX (Proposta)', colSpan: 5, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } },
-                { content: capexTotalGeralEl.innerText, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
-            ]);
-            doc.autoTable({
-                startY: y, head: capexHead, body: capexBody,
-                headStyles: { fillColor: [248, 250, 252], textColor: [0,0,0], fontSize: 9 },
-                bodyStyles: { fontSize: 8 },
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            
-            let finalY = doc.autoTable.previous.finalY;
-
-            // --- BLOCO 4: CONSOLIDAÇÃO ---
-            if (finalY > 240) {
-                doc.addPage();
-                finalY = 40;
-            } else {
-                finalY += 10;
-            }
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(40, 40, 40);
-            doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA (SESI)", 15, finalY);
-            finalY += 10;
-            
-            const condicaoPagamentoEl = bl4CondicaoPagamentoSelect;
-            const condicaoTexto = condicaoPagamentoEl.options[condicaoPagamentoEl.selectedIndex].text;
-            const ajusteValor = parseMoeda(bl4AjustePagamentoDisplayEl.innerText);
-
-            let bodyConsolidacaoCompleto = [
-                ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                ['Total CAPEX (Proposta)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
-            ];
-             if (ajusteValor !== 0) {
-                bodyConsolidacaoCompleto.push(
-                    [`Ajuste Cond. Pagamento (${condicaoTexto})`, { content: formatarMoeda(ajusteValor), styles: { halign: 'right' } }]
-                );
-            }
-            bodyConsolidacaoCompleto.push(
-                [{ content: 'VALOR TOTAL DA PROPOSTA (SESI)', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
-                 { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
-            );
-            doc.autoTable({
-                startY: finalY, theme: 'grid', styles: { fontSize: 11, cellPadding: 3 },
-                body: bodyConsolidacaoCompleto,
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            
-            // FIM DO PDF
-            addHeaderFooterPDF(doc, dataGeracao); // Adiciona cabeçalho/rodapé na última página
-            doc.save('Proposta_Completa_Piloto_9_Escolas_SESI.pdf');
-        }
-
-        // --- FUNÇÃO PARA GERAR O PDF (Versão Resumo) ---
-        // ** BLOCO 5 REMOVIDO DESTA FUNÇÃO **
-        function gerarPDFResumo() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-            const dataGeracao = new Date().toLocaleString('pt-BR');
-            let y = 40; 
-
-            // --- BLOCO 1 ---
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(40, 40, 40);
-            doc.text("BLOCO 1: RESUMO DO PÚBLICO-ALVO", 15, y);
-            y += 8;
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
-                body: [
-                    ['Total Escolas', totalEscolasEl.innerText],
-                    ['Total Alunos (Base)', totalAlunosBaseEl.innerText],
-                    ['Total Turmas', totalTurmasEl.innerText],
-                    ['Acréscimo Especiais (%)', `${acrescimoInput.value}%`],
-                    [{content: 'Total Alunos (Final Estimado)', styles: {fontStyle: 'bold'}} , 
-                     {content: totalAlunosFinalEl.innerText, styles: {fontStyle: 'bold', halign: 'right'}}]
-                ],
-                didDrawPage: (data) => { if (data.pageNumber === 1) addHeaderFooterPDF(doc, dataGeracao); }
-            });
-            y = doc.autoTable.previous.finalY + 10;
-
-            // --- BLOCO 2 ---
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text("BLOCO 2: RESUMO DE CUSTOS OPERACIONAIS (OPEX)", 15, y);
-            y += 8;
-            const modeloAtendimentoTexto = opexModeloAtendimentoSelect.options[opexModeloAtendimentoSelect.selectedIndex].text;
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 9, cellPadding: 2 },
-                body: [
-                    ['Modelo de Atendimento', modeloAtendimentoTexto],
-                    ['Custo Total Monitores (9 meses)', opexCustoMonitoresEl.innerText],
-                    ['Custo Total Professores (Anual)', opexCustoProfessoresEl.innerText],
-                    ['Custo Total Equipe Técnica (9 meses)', opexCustoEquipeEl.innerText],
-                    [{content: 'Total OPEX (Anual)', styles: {fontStyle: 'bold', fontSize: 10}}, 
-                     {content: opexTotalAnualEl.innerText, styles: {fontStyle: 'bold', fontSize: 10, halign: 'right'}}]
-                ],
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-            y = doc.autoTable.previous.finalY + 10;
-            
-            // --- BLOCO 4 ---
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text("BLOCO 4: CONSOLIDAÇÃO DA PROPOSTA (SESI)", 15, y);
-            y += 10;
-            
-            const condicaoPagamentoEl = bl4CondicaoPagamentoSelect;
-            const condicaoTexto = condicaoPagamentoEl.options[condicaoPagamentoEl.selectedIndex].text;
-            const ajusteValor = parseMoeda(bl4AjustePagamentoDisplayEl.innerText);
-
-            let bodyConsolidacaoResumo = [
-                ['Total OPEX (Anual)', { content: totalOpexConsolidadoEl.innerText, styles: { halign: 'right' } }],
-                ['Total CAPEX (Proposta)', { content: totalCapexConsolidadoEl.innerText, styles: { halign: 'right' } }]
-            ];
-             if (ajusteValor !== 0) {
-                bodyConsolidacaoResumo.push(
-                    [`Ajuste Cond. Pagamento (${condicaoTexto})`, { content: formatarMoeda(ajusteValor), styles: { halign: 'right' } }]
-                );
-            }
-            bodyConsolidacaoResumo.push(
-                [{ content: 'VALOR TOTAL DA PROPOSTA (SESI)', styles: { fontStyle: 'bold', fontSize: 12, fillColor: [238, 242, 255] } },
-                 { content: totalGeralPropostaEl.innerText, styles: { fontStyle: 'bold', fontSize: 12, halign: 'right', fillColor: [238, 242, 255] } }]
-            );
-            doc.autoTable({
-                startY: y, theme: 'grid', styles: { fontSize: 11, cellPadding: 3 },
-                body: bodyConsolidacaoResumo,
-                didDrawPage: () => addHeaderFooterPDF(doc, dataGeracao)
-            });
-           
-            // FIM DO PDF
-            addHeaderFooterPDF(doc, dataGeracao); // Adiciona cabeçalho/rodapé na última página
-            doc.save('Resumo_Proposta_Piloto_9_Escolas_SESI.pdf');
-        }
-
-        // --- EVENT LISTENERS ---
-
-        // Bloco 1:
-        filtroEscolaInput.addEventListener('input', (e) => {
-            renderizarListaEscolas(e.target.value);
+            listaEl.appendChild(div);
         });
-        listaEscolasContainer.addEventListener('change', (e) => {
-            if (e.target.classList.contains('escola-checkbox')) {
-                atualizarTotais();
-            }
-        });
-        acrescimoInput.addEventListener('input', atualizarTotais);
-        btnLimparFiltros.addEventListener('click', limparFiltrosBloco1);
-        btnSelecionarTodas.addEventListener('click', selecionarTodasEscolas);
+    }
 
-        // Bloco 2:
-        const inputsOpex = [
-            opexModeloAtendimentoSelect, opexBolsaMonitorInput, opexValorHoraProfessorInput,
-            opexCustoAssistenteInput, opexCustoAnalista2Input, opexCustoAnalista3Input
-        ];
-        inputsOpex.forEach(input => {
-            input.addEventListener('input', recalcularOpexEConsolidacao);
-            if (input.tagName === 'SELECT') {
-                input.addEventListener('change', recalcularOpexEConsolidacao);
+    // Render Capex Table
+    function renderCapex() {
+        capexTableEl.innerHTML = '';
+        dadosCapex.forEach(item => {
+            const unidadeTxt = item.unidade === 'grupo3' ? '(1/3 Escolas)' : '(p/ Escola)';
+            const checkedLocacao = item.locacao50 ? 'checked' : '';
+            const percent = item.locacao50 ? 0.5 : 0.3;
+            const labelLocacao = item.locacao50 ? 'Locação (50%)' : 'Locação (30%)';
+            
+            const tr = document.createElement('tr');
+            tr.className = 'border-b hover:bg-gray-50 capex-row';
+            tr.dataset.id = item.id;
+            tr.innerHTML = `
+                <td class="py-2 px-4 align-top"><input type="checkbox" class="capex-check" checked></td>
+                <td class="py-2 px-4 align-top font-medium">${item.produto}</td>
+                <td class="py-2 px-4 align-top">
+                    <input type="number" class="capex-qtd w-16 border rounded text-center" value="${item.qtd}">
+                    <span class="text-xs text-gray-500 ml-1">${unidadeTxt}</span>
+                </td>
+                <td class="py-2 px-4 align-top space-y-1">
+                    <div class="flex items-center text-xs">
+                        <input type="radio" name="cost_${item.id}" value="aquisicao" class="mr-1 capex-radio" checked>
+                        <span class="mr-1">Aquisição:</span>
+                        <input type="number" class="capex-vlr-base w-20 border rounded px-1" value="${item.vlrAquisicao}">
+                    </div>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <input type="radio" name="cost_${item.id}" value="locacao" class="mr-1 capex-radio">
+                        <span>${labelLocacao}: <span class="capex-display-locacao">${(item.vlrAquisicao * percent).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</span></span>
+                    </div>
+                </td>
+                <td class="py-2 px-4 text-right font-bold capex-total-item">R$ 0,00</td>
+            `;
+            capexTableEl.appendChild(tr);
+        });
+    }
+
+    // Formatter
+    const fmtBRL = (v) => v.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+    const parseBRL = (s) => parseFloat(s.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+
+    // Main Calculation
+    function calcular() {
+        // Bloco 1
+        const checks = document.querySelectorAll('.escola-checkbox:checked');
+        let escolas = 0, alunos = 0, turmas = 0;
+        checks.forEach(c => {
+            escolas++;
+            alunos += parseInt(c.dataset.alunos);
+            turmas += parseInt(c.dataset.turmas);
+        });
+        const acrescimo = parseFloat(acrescimoEl.value) || 0;
+        const alunosFinal = Math.round(alunos * (1 + acrescimo/100));
+
+        document.getElementById('total-escolas').innerText = escolas;
+        document.getElementById('total-alunos-base').innerText = alunos.toLocaleString('pt-BR');
+        document.getElementById('total-turmas').innerText = turmas;
+        document.getElementById('total-alunos-final').innerText = alunosFinal.toLocaleString('pt-BR');
+        
+        // Bloco 2 (OPEX)
+        const periodo = 9;
+        const modeloHoras = parseFloat(document.getElementById('opex-modelo-atendimento').value);
+        const bolsa = parseFloat(document.getElementById('opex-bolsa-monitor').value);
+        const horaProf = parseFloat(document.getElementById('opex-valor-hora-professor').value);
+        const salAssist = parseFloat(document.getElementById('opex-custo-assistente').value);
+        const salAnal2 = parseFloat(document.getElementById('opex-custo-analista2').value);
+        const salAnal3 = parseFloat(document.getElementById('opex-custo-analista3').value);
+
+        const qtdAssist = Math.ceil(escolas / 5);
+        const qtdAnal2 = Math.ceil(escolas / 5);
+        const qtdAnal3 = escolas > 0 ? 2 : 0;
+
+        document.getElementById('opex-total-turmas').innerText = turmas;
+        document.getElementById('opex-qtd-assistentes').innerText = qtdAssist;
+        document.getElementById('opex-qtd-analistas2').innerText = qtdAnal2;
+        document.getElementById('opex-qtd-analistas3').innerText = qtdAnal3;
+
+        const custMon = turmas * bolsa * periodo;
+        const custProf = turmas * modeloHoras * horaProf;
+        const custEquipe = ((qtdAssist * salAssist) + (qtdAnal2 * salAnal2) + (qtdAnal3 * salAnal3)) * periodo;
+        const totalOpex = custMon + custProf + custEquipe;
+
+        document.getElementById('opex-custo-monitores').innerText = fmtBRL(custMon);
+        document.getElementById('opex-custo-professores').innerText = fmtBRL(custProf);
+        document.getElementById('opex-custo-equipe').innerText = fmtBRL(custEquipe);
+        document.getElementById('opex-total-anual').innerText = fmtBRL(totalOpex);
+        document.getElementById('total-opex-consolidado').innerText = fmtBRL(totalOpex);
+
+        // Bloco 3 (CAPEX)
+        let totalCapex = 0;
+        document.querySelectorAll('.capex-row').forEach(row => {
+            if(!row.querySelector('.capex-check').checked) {
+                row.querySelector('.capex-total-item').innerText = fmtBRL(0);
+                return;
+            }
+            const itemData = dadosCapex.find(d => d.id === row.dataset.id);
+            const qtd = parseFloat(row.querySelector('.capex-qtd').value) || 0;
+            const vlrBase = parseFloat(row.querySelector('.capex-vlr-base').value) || 0;
+            const radioVal = row.querySelector('input[type=radio]:checked').value;
+            
+            // Atualiza display locação
+            const percent = itemData.locacao50 ? 0.5 : 0.3;
+            row.querySelector('.capex-display-locacao').innerText = fmtBRL(vlrBase * percent);
+
+            const vlrFinal = radioVal === 'aquisicao' ? vlrBase : (vlrBase * percent);
+            
+            // Multiplicador
+            let mult = escolas;
+            if(itemData.unidade === 'grupo3') mult = Math.ceil(escolas / 3);
+            // Se fosse 'turma', seria mult = turmas. Mas a base atual é escola ou grupo.
+
+            const totalItem = qtd * vlrFinal * mult;
+            totalCapex += totalItem;
+            row.querySelector('.capex-total-item').innerText = fmtBRL(totalItem);
+        });
+        document.getElementById('capex-total-geral').innerText = fmtBRL(totalCapex);
+        document.getElementById('total-capex-consolidado').innerText = fmtBRL(totalCapex);
+
+        // Bloco 4
+        const condPgto = document.getElementById('bl4-condicao-pagamento').value;
+        let adjustPct = 0;
+        if(condPgto === 'mensal') adjustPct = 0.03;
+        if(condPgto === 'semestral') adjustPct = -0.02;
+        if(condPgto === 'avista') adjustPct = -0.05;
+
+        const subTotal = totalOpex + totalCapex;
+        const valAjuste = subTotal * adjustPct;
+        const totalGeral = subTotal + valAjuste;
+
+        document.getElementById('bl4-ajuste-pagamento-display').innerText = (valAjuste >=0 ? '+' : '') + fmtBRL(valAjuste);
+        document.getElementById('total-geral-proposta').innerText = fmtBRL(totalGeral);
+
+        // Bloco 5 (Interno)
+        const horaReal = parseFloat(document.getElementById('bl5-margem-custo-hora-professor').value) || 0;
+        const margemCapex = parseFloat(document.getElementById('bl5-margem-capex-percent').value) || 0;
+        
+        // Custo Real
+        const opexReal = (turmas * modeloHoras * horaReal) + custMon + custEquipe; // Monitores e equipe s/ margem no cálculo simples
+        const capexReal = totalCapex / (1 + margemCapex/100);
+        const custoTotalReal = opexReal + capexReal;
+        const lucro = totalGeral - custoTotalReal;
+
+        document.getElementById('bl5-margem-lucro-bruto').innerText = fmtBRL(lucro);
+        
+        const pctCusto = (custoTotalReal / totalGeral) * 100;
+        const pctLucro = (lucro / totalGeral) * 100;
+        
+        document.getElementById('bl5-margem-regua-custo').style.width = `${Math.max(0, Math.min(100, pctCusto))}%`;
+        document.getElementById('bl5-margem-regua-custo').innerText = pctCusto > 10 ? pctCusto.toFixed(0)+'%' : '';
+        
+        document.getElementById('bl5-margem-regua-lucro').style.width = `${Math.max(0, Math.min(100, pctLucro))}%`;
+        document.getElementById('bl5-margem-regua-lucro').innerText = pctLucro > 10 ? pctLucro.toFixed(0)+'%' : '';
+    }
+
+    // Listeners
+    filtroEl.addEventListener('input', (e) => renderEscolas(e.target.value));
+    
+    document.getElementById('btn-selecionar-todas').onclick = () => {
+        document.querySelectorAll('.escola-checkbox').forEach(c => c.checked = true);
+        calcular();
+    };
+    document.getElementById('btn-limpar-filtros').onclick = () => {
+        document.querySelectorAll('.escola-checkbox').forEach(c => c.checked = false);
+        calcular();
+    };
+    listaEl.addEventListener('change', calcular);
+    acrescimoEl.addEventListener('input', calcular);
+    
+    // Opex listeners
+    ['opex-modelo-atendimento', 'opex-bolsa-monitor', 'opex-valor-hora-professor', 
+     'opex-custo-assistente', 'opex-custo-analista2', 'opex-custo-analista3']
+     .forEach(id => document.getElementById(id).addEventListener('input', calcular));
+
+    // Capex listeners (delegation)
+    capexTableEl.addEventListener('input', calcular);
+    capexTableEl.addEventListener('change', calcular);
+
+    // Bloco 4/5 listeners
+    document.getElementById('bl4-condicao-pagamento').addEventListener('change', calcular);
+    document.getElementById('bl5-margem-custo-hora-professor').addEventListener('input', calcular);
+    document.getElementById('bl5-margem-capex-percent').addEventListener('input', calcular);
+
+    // PDF
+    document.getElementById('btn-gerar-pdf-completo').onclick = () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const data = new Date().toLocaleDateString('pt-BR');
+        
+        doc.setFontSize(18);
+        doc.text("Proposta de Parceria - Atividades Complementares", 105, 20, {align:'center'});
+        
+        // Tabela Resumo
+        doc.autoTable({
+            startY: 30,
+            head: [['Conceito', 'Valor']],
+            body: [
+                ['Total Escolas', document.getElementById('total-escolas').innerText],
+                ['Total Alunos', document.getElementById('total-alunos-final').innerText],
+                ['Total OPEX', document.getElementById('total-opex-consolidado').innerText],
+                ['Total CAPEX', document.getElementById('total-capex-consolidado').innerText],
+                ['TOTAL GERAL', document.getElementById('total-geral-proposta').innerText]
+            ]
+        });
+        
+        // Tabela Capex Detalhada
+        const capexRows = [];
+        document.querySelectorAll('.capex-row').forEach(row => {
+            if(row.querySelector('.capex-check').checked) {
+                const tds = row.querySelectorAll('td');
+                capexRows.push([
+                    tds[1].innerText, // Produto
+                    row.querySelector('.capex-qtd').value, // Qtd
+                    row.querySelector('input[type=radio]:checked').value === 'aquisicao' ? 'Aquisição' : 'Locação',
+                    row.querySelector('.capex-total-item').innerText // Total
+                ]);
             }
         });
         
-        // Bloco 3:
-        capexTabelaItensContainer.addEventListener('input', (e) => {
-            if (e.target.classList.contains('capex-valor-base-input')) {
-                const row = e.target.closest('.capex-item-row');
-                const valorBase = parseFloat(e.target.value) || 0;
-                const radioLocacao = row.querySelector('input[value="locacao"]');
-                const percentual = parseFloat(radioLocacao.dataset.percentual) || 0.30;
-                const valorLocacao = valorBase * percentual;
-                const displaySpan = row.querySelector('.capex-locacao-display');
-                displaySpan.innerText = formatarMoeda(valorLocacao);
-                recalcularCapexEConsolidacao(); 
-            }
-            else if (e.target.classList.contains('capex-qtd-escola') || 
-                e.target.classList.contains('capex-checkbox') ||
-                e.target.classList.contains('capex-tipo-custo')) {
-                recalcularCapexEConsolidacao();
-            }
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 10,
+            head: [['Produto', 'Qtd', 'Tipo', 'Total']],
+            body: capexRows
         });
+        
+        doc.save('Proposta_Completa.pdf');
+    };
 
-        // Bloco 4:
-        bl4CondicaoPagamentoSelect.addEventListener('change', recalcularApenasConsolidacao); 
-        btnGerarPdfCompleto.addEventListener('click', gerarPDFCompleto);
-        btnGerarPdfResumo.addEventListener('click', gerarPDFResumo);
+    document.getElementById('btn-gerar-pdf-resumo').onclick = () => {
+        // Mesma lógica simplificada
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Resumo da Proposta", 105, 20, {align:'center'});
+        doc.autoTable({
+            startY: 30,
+            head: [['Item', 'Valor']],
+            body: [
+                ['Escolas', document.getElementById('total-escolas').innerText],
+                ['Total Anual', document.getElementById('total-geral-proposta').innerText]
+            ]
+        });
+        doc.save('Resumo.pdf');
+    };
 
-        // Bloco 5: 
-        bl5MargemCustoHoraProfessorInput.addEventListener('input', atualizarBloco5);
-        bl5MargemCapexPercentInput.addEventListener('input', atualizarBloco5);
+    // Init
+    renderEscolas();
+    renderCapex();
+    calcular();
 
-
-        // --- INICIALIZAÇÃO ---
-        renderizarListaEscolas(); 
-        renderizarTabelaCapex(); 
-        atualizarTotais(); // Chama todos os blocos em cascata
-
-    </script>
-
+</script>
 </body>
 </html>
